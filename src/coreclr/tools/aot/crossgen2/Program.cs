@@ -1045,15 +1045,25 @@ namespace ILCompiler
 #endif
             catch (BadImageFormatException ex)
             {
-                Console.Error.WriteLine("Bad image format: {0}", ex.FileName);
+                string fileName = ex.FileName;
+                int commaIndex = fileName.IndexOf(',');
+                if (commaIndex >= 0)
+                {
+                    fileName = fileName.Substring(0, commaIndex);
+                }
+                if (!fileName.EndsWith(".dll"))
+                {
+                    fileName += ".dll";
+                }
+                Console.Error.WriteLine("Bad image format: {0}", fileName);
                 string thisFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 Console.Error.WriteLine("This folder:      {0}", thisFolder);
-                string filePath = Path.Combine(thisFolder, ex.FileName);
+                string filePath = Path.Combine(thisFolder, fileName);
                 if (File.Exists(filePath))
                 {
                     string uploadRoot = Environment.GetEnvironmentVariable("__CrashDumpFolder");
-                    string targetPath = Path.Combine(uploadRoot, Path.GetFileName(ex.FileName));
-                    Console.Error.WriteLine("File size:   {0}", new FileInfo(ex.FileName).Length);
+                    string targetPath = Path.Combine(uploadRoot, Path.GetFileName(fileName));
+                    Console.Error.WriteLine("File size:   {0}", new FileInfo(fileName).Length);
                     Console.Error.WriteLine("Upload root: {0}", uploadRoot);
                     Console.Error.WriteLine("Target path: {0}", targetPath);
                     if (!File.Exists(targetPath))
