@@ -60,6 +60,13 @@ jobs:
     - HelixPreCommandStemMusl: 'export ORIGPYPATH=$PYTHONPATH;sudo apk add icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib cargo;sudo apk add libgdiplus --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing; python3 -m venv $HELIX_WORKITEM_PAYLOAD/.venv;source $HELIX_WORKITEM_PAYLOAD/.venv/bin/activate;export PYTHONPATH=;python3 -m pip install -U pip;pip3 install azure.storage.blob==12.7.1;pip3 install azure.storage.queue==12.1.5;export PERFLAB_UPLOAD_TOKEN="$(PerfCommandUploadTokenLinux)"'
     - ExtraMSBuildLogsWindows: 'set MSBUILDDEBUGCOMM=1;set "MSBUILDDEBUGPATH=%HELIX_WORKITEM_UPLOAD_ROOT%"'
     - ExtraMSBuildLogsLinux: 'export MSBUILDDEBUGCOMM=1;export "MSBUILDDEBUGPATH=$HELIX_WORKITEM_UPLOAD_ROOT"'
+    - ExtraHelixLogsLinux: >-
+        export _PERF_DIR=$HELIX_CORRELATION_PAYLOAD/performance ;
+        mkdir -p $(Build.SourcesDirectory)/artifacts/log/obj ;
+        mkdir -p $(Build.SourcesDirectory)/artifacts/log/bin ;
+        find $_PERF_DIR -name '*.binlog' | xargs -I{} cp {} $(Build.SourcesDirectory)/artifacts/log ;
+        cp -R $_PERF_DIR/artifacts/obj/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log ;
+        cp -R $_PERF_DIR/artifacts/bin/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log
     - HelixPreCommand: ''
     - Interpreter: ''
 
@@ -75,7 +82,7 @@ jobs:
           - IsInternal: --internal
         - ${{ if ne(parameters.osSubGroup, '_musl') }}:
           - HelixPreCommand: $(HelixPreCommandStemLinux);$(ExtraMSBuildLogsLinux)
-          - HelixPostCommand: 'export PYTHONPATH=$ORIGPYPATH'
+          - HelixPostCommand: 'export PYTHONPATH=$ORIGPYPATH;$(ExtraHelixLogsLinux)'
           - IsInternal: --internal
       - group: DotNet-HelixApi-Access
       - group: dotnet-benchview
@@ -142,15 +149,6 @@ jobs:
         CorrelationPayloadDirectory: '$(PayloadDirectory)' # it gets checked out to a folder with shorter path than WorkItemDirectory so we can avoid file name too long exceptions
         ProjectFile: ${{ parameters.projectFile }}
         osGroup: ${{ parameters.osGroup }}
-    - script: >-
-        export _PERF_DIR=$HELIX_CORRELATION_PAYLOAD/performance ;
-        mkdir -p $(Build.SourcesDirectory)/artifacts/log/obj ;
-        mkdir -p $(Build.SourcesDirectory)/artifacts/log/bin ;
-        find $_PERF_DIR -name '*.binlog' | xargs -I{} cp {} $(Build.SourcesDirectory)/artifacts/log ;
-        cp -R $_PERF_DIR/artifacts/obj/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log ;
-        cp -R $_PERF_DIR/artifacts/bin/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log
-      displayName: 'Stage binlog, and obj dir'
-      condition: always()
     - task: PublishPipelineArtifact@1
       displayName: Publish Logs
       inputs:
