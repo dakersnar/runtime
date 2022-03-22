@@ -142,6 +142,13 @@ jobs:
         CorrelationPayloadDirectory: '$(PayloadDirectory)' # it gets checked out to a folder with shorter path than WorkItemDirectory so we can avoid file name too long exceptions
         ProjectFile: ${{ parameters.projectFile }}
         osGroup: ${{ parameters.osGroup }}
+    - script: >-
+      mkdir -p $(Build.SourcesDirectory)/artifacts/log/obj &&
+      mkdir -p $(Build.SourcesDirectory)/artifacts/log/bin &&
+      find $(Build.SourcesDirectory) -name '*.binlog' | xargs -I{} cp {} $(Build.SourcesDirectory)/artifacts/log &&
+      cp -R $(Build.SourcesDirectory)/artifacts/obj/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log &&
+      cp -R $(Build.SourcesDirectory)/artifacts/bin/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log
+      displayName: 'Stage binlog, and obj dir'
     - task: PublishPipelineArtifact@1
       displayName: Publish Logs
       inputs:
