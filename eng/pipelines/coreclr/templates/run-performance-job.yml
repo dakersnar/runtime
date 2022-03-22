@@ -150,6 +150,7 @@ jobs:
         cp -R $_PERF_DIR/artifacts/obj/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log ;
         cp -R $_PERF_DIR/artifacts/bin/MicroBenchmarks $(Build.SourcesDirectory)/artifacts/log
       displayName: 'Stage binlog, and obj dir'
+      condition: always()
     - task: PublishPipelineArtifact@1
       displayName: Publish Logs
       inputs:
