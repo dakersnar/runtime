@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="System\Numerics\Decimal32.cs" />
+    <Compile Include="System\Numerics\IeeeDecimalNumber.Conversions.cs" />
     <Compile Include="System\Numerics\IeeeDecimalNumber.cs" />
     <Compile Include="System\ThrowHelper.cs" />
     <Compile Include="System\Numerics\BigIntegerCalculator.AddSub.cs" />
