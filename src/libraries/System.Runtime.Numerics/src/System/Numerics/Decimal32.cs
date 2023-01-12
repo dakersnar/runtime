@@ -1107,7 +1107,6 @@ namespace System.Numerics
         public int GetExponentShortestBitLength() => throw new NotImplementedException();
         public int GetSignificandBitLength() => throw new NotImplementedException();
         public int GetSignificandByteCount() => throw new NotImplementedException();
-        public TypeCode GetTypeCode() => throw new NotImplementedException();
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => throw new NotImplementedException();
         public bool TryWriteExponentBigEndian(Span<byte> destination, out int bytesWritten) => throw new NotImplementedException();
         public bool TryWriteExponentLittleEndian(Span<byte> destination, out int bytesWritten) => throw new NotImplementedException();
