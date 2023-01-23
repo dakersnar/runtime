@@ -1,13 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Runtime.CompilerServices;
-
 namespace System.Numerics
 {
     internal static partial class IeeeDecimalNumber
@@ -700,10 +693,10 @@ namespace System.Numerics
         }
 
         private const uint CLZ32_MASK16 = 0xFFFF0000u;
-        private const uint CLZ32_MASK8  = 0xFF00FF00u;
-        private const uint CLZ32_MASK4  = 0xF0F0F0F0u;
-        private const uint CLZ32_MASK2  = 0xCCCCCCCCu;
-        private const uint CLZ32_MASK1  = 0xAAAAAAAAu;
+        private const uint CLZ32_MASK8 = 0xFF00FF00u;
+        private const uint CLZ32_MASK4 = 0xF0F0F0F0u;
+        private const uint CLZ32_MASK2 = 0xCCCCCCCCu;
+        private const uint CLZ32_MASK1 = 0xAAAAAAAAu;
 
         private static int clz32_nz(ulong n)
         {
@@ -717,7 +710,7 @@ namespace System.Numerics
         private static Classification unpack_bid32(uint x, out int s, out int e, out int k, out ulong c)
         {
             s = (int)x >> 31;
-            if ((x & (3UL<<29)) == (3UL<<29))
+            if ((x & (3UL << 29)) == (3UL << 29))
             {
                 if ((x & (0xFUL << 27)) == (0xFUL << 27))
                 {
@@ -736,8 +729,8 @@ namespace System.Numerics
 
                 }
 
-                e = (int)((x >> 21) & ((1UL<<8)-1)) - 101;
-                c = (1UL<<23) + (x & ((1UL<<21)-1));
+                e = (int)((x >> 21) & ((1UL << 8) - 1)) - 101;
+                c = (1UL << 23) + (x & ((1UL << 21) - 1));
                 if ((uint)(c) > 9999999u)
                 {
                     k = 0; // return default value to satisfy "out", this will go unused
@@ -747,8 +740,8 @@ namespace System.Numerics
             }
             else
             {
-                e = (int)((x >> 23) & ((1UL << 8)-1)) -101;
-                c = x & ((1UL << 23)-1);
+                e = (int)((x >> 23) & ((1UL << 8) - 1)) - 101;
+                c = x & ((1UL << 23) - 1);
                 if (c == 0)
                 {
                     k = 0; // return default value to satisfy "out", this will go unused
@@ -787,14 +780,14 @@ namespace System.Numerics
         {
             ulong X1 = X;
             S = X + Y;
-            CY = (S<X1) ? 1UL : 0UL;
+            CY = (S < X1) ? 1UL : 0UL;
         }
         public static void __add_carry_in_out(out ulong S, ref ulong CY, ulong X, ulong Y, ulong CI)
         {
             ulong X1;
             X1 = X + CI;
             S = X1 + Y;
-            CY = ((S<X1) || (X1<CI)) ? 1UL : 0UL;
+            CY = ((S < X1) || (X1 < CI)) ? 1UL : 0UL;
         }
 
         private static void __mul_64x256_to_320(out (ulong, ulong, ulong, ulong, ulong, ulong) P, ulong A, (ulong, ulong, ulong, ulong) B)
@@ -866,7 +859,7 @@ namespace System.Numerics
                 case Classification.Infinity: return return_binary32_inf(s);
                 case Classification.Zero: return return_binary32_zero(s);
                 case Classification.NaN: return return_binary32_nan(s, ((x & 0xFFFFFu) > 999999u) ? 0UL : (((ulong)x) << 44));
-                // Classification.Finite will continue onward
+                    // Classification.Finite will continue onward
             }
 
             // Correct to 2^112 <= c < 2^113 with corresponding exponent adding 113-24=89
