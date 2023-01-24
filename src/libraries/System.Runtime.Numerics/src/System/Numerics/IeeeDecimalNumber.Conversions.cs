@@ -4593,9 +4593,9 @@ namespace System.Numerics
             // PORT: remove status flag setting in this function
 
             c = x;
-            e = (int)((c >> 23) & ((1UL << 8)-1)); // PORT: add this cast to int
+            e = (int)((c >> 23) & ((1UL << 8) - 1)); // PORT: add this cast to int
             s = (int)c >> 31; // PORT: add this cast to int
-            c &= ((1UL << 23)-1);
+            c &= ((1UL << 23) - 1);
             if (e == 0)
             {
                 int l;
@@ -4610,7 +4610,7 @@ namespace System.Numerics
                 e = -(l + 149);
                 t = 0;
             }
-            else if (e == (int)((1UL << 8)-1)) // PORT: add this cast to int
+            else if (e == (int)((1UL << 8) - 1)) // PORT: add this cast to int
             {
                 if (c == 0)
                 {
@@ -5011,7 +5011,7 @@ namespace System.Numerics
                 }
                 else if (a <= 48)
                 {
-                    (ulong, ulong) pow5 = (bid_coefflimits_bid32[2*a], bid_coefflimits_bid32[2 * a + 1]);
+                    (ulong, ulong) pow5 = (bid_coefflimits_bid32[2 * a], bid_coefflimits_bid32[2 * a + 1]);
                     srl128(ref cint.Item2, ref cint.Item1, t);
                     if (le128(cint.Item2, cint.Item1, pow5.Item2, pow5.Item1))
                     {
@@ -5069,7 +5069,8 @@ namespace System.Numerics
                 ))
             {
                 c_prov++;
-                if (c_prov == 10000000UL) {
+                if (c_prov == 10000000UL)
+                {
                     c_prov = 1000000UL;
                     e_out++;
                 }
