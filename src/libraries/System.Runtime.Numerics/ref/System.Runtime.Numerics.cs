@@ -382,7 +382,7 @@ namespace System.Numerics
         public static bool TryParse([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] string? s, System.Globalization.NumberStyles style, System.IFormatProvider? provider, out System.Numerics.Complex result) { throw null; }
         public static bool TryParse([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] string? s, System.IFormatProvider? provider, out System.Numerics.Complex result) { throw null; }
     }
-    public readonly partial struct Decimal32 : System.IComparable, System.IComparable<System.Numerics.Decimal32>, System.IEquatable<System.Numerics.Decimal32>, System.IFormattable, System.IParsable<System.Numerics.Decimal32>, System.ISpanFormattable, System.ISpanParsable<System.Numerics.Decimal32>, System.Numerics.IAdditionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IAdditiveIdentity<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IComparisonOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, bool>, System.Numerics.IDecimalFloatingPointIeee754<System.Numerics.Decimal32>, System.Numerics.IDecrementOperators<System.Numerics.Decimal32>, System.Numerics.IDivisionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IEqualityOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, bool>, System.Numerics.IExponentialFunctions<System.Numerics.Decimal32>, System.Numerics.IFloatingPoint<System.Numerics.Decimal32>, System.Numerics.IFloatingPointConstants<System.Numerics.Decimal32>, System.Numerics.IFloatingPointIeee754<System.Numerics.Decimal32>, System.Numerics.IHyperbolicFunctions<System.Numerics.Decimal32>, System.Numerics.IIncrementOperators<System.Numerics.Decimal32>, System.Numerics.ILogarithmicFunctions<System.Numerics.Decimal32>, System.Numerics.IMinMaxValue<System.Numerics.Decimal32>, System.Numerics.IModulusOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IMultiplicativeIdentity<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IMultiplyOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.INumber<System.Numerics.Decimal32>, System.Numerics.INumberBase<System.Numerics.Decimal32>, System.Numerics.IPowerFunctions<System.Numerics.Decimal32>, System.Numerics.IRootFunctions<System.Numerics.Decimal32>, System.Numerics.ISignedNumber<System.Numerics.Decimal32>, System.Numerics.ISubtractionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.ITrigonometricFunctions<System.Numerics.Decimal32>, System.Numerics.IUnaryNegationOperators<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IUnaryPlusOperators<System.Numerics.Decimal32, System.Numerics.Decimal32>
+    public readonly partial struct Decimal32 : System.IComparable, System.IComparable<System.Numerics.Decimal32>, System.IEquatable<System.Numerics.Decimal32>, System.IFormattable, System.IParsable<System.Numerics.Decimal32>, System.ISpanFormattable, System.ISpanParsable<System.Numerics.Decimal32>, System.Numerics.IAdditionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IAdditiveIdentity<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IComparisonOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, bool>, System.Numerics.IDecrementOperators<System.Numerics.Decimal32>, System.Numerics.IDivisionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IEqualityOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, bool>, System.Numerics.IFloatingPoint<System.Numerics.Decimal32>, System.Numerics.IFloatingPointConstants<System.Numerics.Decimal32>, System.Numerics.IIncrementOperators<System.Numerics.Decimal32>, System.Numerics.IMinMaxValue<System.Numerics.Decimal32>, System.Numerics.IModulusOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IMultiplicativeIdentity<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IMultiplyOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.INumber<System.Numerics.Decimal32>, System.Numerics.INumberBase<System.Numerics.Decimal32>, System.Numerics.ISignedNumber<System.Numerics.Decimal32>, System.Numerics.ISubtractionOperators<System.Numerics.Decimal32, System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IUnaryNegationOperators<System.Numerics.Decimal32, System.Numerics.Decimal32>, System.Numerics.IUnaryPlusOperators<System.Numerics.Decimal32, System.Numerics.Decimal32>
     {
         private readonly int _dummyPrimitive;
         public static System.Numerics.Decimal32 E { get { throw null; } }
@@ -402,43 +402,21 @@ namespace System.Numerics
         public static System.Numerics.Decimal32 Tau { get { throw null; } }
         public static System.Numerics.Decimal32 Zero { get { throw null; } }
         public static System.Numerics.Decimal32 Abs(System.Numerics.Decimal32 value) { throw null; }
-        public static System.Numerics.Decimal32 Acos(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Acosh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 AcosPi(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Asin(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Asinh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 AsinPi(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Atan(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Atan2(System.Numerics.Decimal32 y, System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Atan2Pi(System.Numerics.Decimal32 y, System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Atanh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 AtanPi(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 BitDecrement(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 BitIncrement(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Cbrt(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 Ceiling(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 Clamp(System.Numerics.Decimal32 value, System.Numerics.Decimal32 min, System.Numerics.Decimal32 max) { throw null; }
         public int CompareTo(System.Numerics.Decimal32 other) { throw null; }
         public int CompareTo(object? obj) { throw null; }
         public static System.Numerics.Decimal32 CopySign(System.Numerics.Decimal32 value, System.Numerics.Decimal32 sign) { throw null; }
-        public static System.Numerics.Decimal32 Cos(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Cosh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 CosPi(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 CreateChecked<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
         public static System.Numerics.Decimal32 CreateSaturating<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
         public static System.Numerics.Decimal32 CreateTruncating<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
         public bool Equals(System.Numerics.Decimal32 other) { throw null; }
         public override bool Equals([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] object? obj) { throw null; }
-        public static System.Numerics.Decimal32 Exp(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Exp10(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Exp10M1(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Exp2(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Exp2M1(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 ExpM1(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 Floor(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 FusedMultiplyAdd(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right, System.Numerics.Decimal32 addend) { throw null; }
         public override int GetHashCode() { throw null; }
-        public static System.Numerics.Decimal32 Hypot(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 Ieee754Remainder(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
         public static int ILogB(System.Numerics.Decimal32 x) { throw null; }
         public static bool IsEvenInteger(System.Numerics.Decimal32 value) { throw null; }
@@ -454,13 +432,7 @@ namespace System.Numerics
         public static bool IsPositiveInfinity(System.Numerics.Decimal32 value) { throw null; }
         public static bool IsRealNumber(System.Numerics.Decimal32 value) { throw null; }
         public static bool IsSubnormal(System.Numerics.Decimal32 value) { throw null; }
-        public static System.Numerics.Decimal32 Log(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Log(System.Numerics.Decimal32 x, System.Numerics.Decimal32 newBase) { throw null; }
-        public static System.Numerics.Decimal32 Log10(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Log10P1(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Log2(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Log2P1(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 LogP1(System.Numerics.Decimal32 x) { throw null; }
+        public static System.Numerics.Decimal32 Lerp(System.Numerics.Decimal32 value1, System.Numerics.Decimal32 value2, System.Numerics.Decimal32 amount) { throw null; }
         public static System.Numerics.Decimal32 Max(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 MaxMagnitude(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 MaxMagnitudeNumber(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
@@ -470,11 +442,77 @@ namespace System.Numerics
         public static System.Numerics.Decimal32 MinMagnitudeNumber(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 MinNumber(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 operator +(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
+        public static explicit operator checked byte (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked sbyte (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked char (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked short (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked ushort (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked int (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked uint (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked nint (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked nuint (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked long (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked ulong (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator checked System.Int128 (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator checked System.UInt128 (System.Numerics.Decimal32 value) { throw null; }
         public static System.Numerics.Decimal32 operator --(System.Numerics.Decimal32 value) { throw null; }
         public static System.Numerics.Decimal32 operator /(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
         public static bool operator ==(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (decimal value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (double value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (System.Half value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (System.Int128 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Numerics.Decimal32 (int value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (long value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (nint value) { throw null; }
+        public static explicit operator byte (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator char (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator decimal (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator double (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator System.Half (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator System.Int128 (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator short (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator int (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator long (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator nint (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator sbyte (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator float (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.UInt128 (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator ushort (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator uint (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator ulong (System.Numerics.Decimal32 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator nuint (System.Numerics.Decimal32 value) { throw null; }
+        public static explicit operator System.Numerics.Decimal32 (float value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Numerics.Decimal32 (System.UInt128 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Numerics.Decimal32 (uint value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Numerics.Decimal32 (ulong value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Numerics.Decimal32 (nuint value) { throw null; }
         public static bool operator >(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
         public static bool operator >=(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
+        public static implicit operator System.Numerics.Decimal32 (byte value) { throw null; }
+        public static implicit operator System.Numerics.Decimal32 (char value) { throw null; }
+        public static implicit operator System.Numerics.Decimal32 (short value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static implicit operator System.Numerics.Decimal32 (sbyte value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static implicit operator System.Numerics.Decimal32 (ushort value) { throw null; }
         public static System.Numerics.Decimal32 operator ++(System.Numerics.Decimal32 value) { throw null; }
         public static bool operator !=(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
         public static bool operator <(System.Numerics.Decimal32 left, System.Numerics.Decimal32 right) { throw null; }
@@ -490,12 +528,10 @@ namespace System.Numerics
         public static System.Numerics.Decimal32 Parse(string s, System.Globalization.NumberStyles style) { throw null; }
         public static System.Numerics.Decimal32 Parse(string s, System.Globalization.NumberStyles style, System.IFormatProvider? provider) { throw null; }
         public static System.Numerics.Decimal32 Parse(string s, System.IFormatProvider? provider) { throw null; }
-        public static System.Numerics.Decimal32 Pow(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 Quantize(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 Quantum(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 ReciprocalEstimate(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 ReciprocalSqrtEstimate(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 RootN(System.Numerics.Decimal32 x, int n) { throw null; }
         public static System.Numerics.Decimal32 Round(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 Round(System.Numerics.Decimal32 x, int digits) { throw null; }
         public static System.Numerics.Decimal32 Round(System.Numerics.Decimal32 x, int digits, System.MidpointRounding mode) { throw null; }
@@ -503,11 +539,6 @@ namespace System.Numerics
         public static bool SameQuantum(System.Numerics.Decimal32 x, System.Numerics.Decimal32 y) { throw null; }
         public static System.Numerics.Decimal32 ScaleB(System.Numerics.Decimal32 x, int n) { throw null; }
         public static int Sign(System.Numerics.Decimal32 value) { throw null; }
-        public static System.Numerics.Decimal32 Sin(System.Numerics.Decimal32 x) { throw null; }
-        public static (System.Numerics.Decimal32 Sin, System.Numerics.Decimal32 Cos) SinCos(System.Numerics.Decimal32 x) { throw null; }
-        public static (System.Numerics.Decimal32 SinPi, System.Numerics.Decimal32 CosPi) SinCosPi(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Sinh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 SinPi(System.Numerics.Decimal32 x) { throw null; }
         public static System.Numerics.Decimal32 Sqrt(System.Numerics.Decimal32 x) { throw null; }
         int System.Numerics.IFloatingPoint<System.Numerics.Decimal32>.GetExponentByteCount() { throw null; }
         int System.Numerics.IFloatingPoint<System.Numerics.Decimal32>.GetExponentShortestBitLength() { throw null; }
@@ -527,9 +558,6 @@ namespace System.Numerics
         static bool System.Numerics.INumberBase<System.Numerics.Decimal32>.TryConvertToChecked<TOther>(System.Numerics.Decimal32 value, [System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute(false)] out TOther result) { throw null; }
         static bool System.Numerics.INumberBase<System.Numerics.Decimal32>.TryConvertToSaturating<TOther>(System.Numerics.Decimal32 value, [System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute(false)] out TOther result) { throw null; }
         static bool System.Numerics.INumberBase<System.Numerics.Decimal32>.TryConvertToTruncating<TOther>(System.Numerics.Decimal32 value, [System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute(false)] out TOther result) { throw null; }
-        public static System.Numerics.Decimal32 Tan(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 Tanh(System.Numerics.Decimal32 x) { throw null; }
-        public static System.Numerics.Decimal32 TanPi(System.Numerics.Decimal32 x) { throw null; }
         public override string ToString() { throw null; }
         public string ToString(System.IFormatProvider? provider) { throw null; }
         public string ToString([System.Diagnostics.CodeAnalysis.StringSyntaxAttribute("NumericFormat")] string? format) { throw null; }

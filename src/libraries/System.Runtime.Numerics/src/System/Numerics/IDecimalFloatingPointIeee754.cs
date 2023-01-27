@@ -5,7 +5,7 @@ namespace System.Numerics
 {
     /// <summary>Defines an IEEE 754 floating-point type that is represented in a base-10 format.</summary>
     /// <typeparam name="TSelf">The type that implements the interface.</typeparam>
-    public interface IDecimalFloatingPointIeee754<TSelf>
+    internal interface IDecimalFloatingPointIeee754<TSelf> // TODO make this public eventually
         : IFloatingPointIeee754<TSelf>
         where TSelf : IDecimalFloatingPointIeee754<TSelf>
     {
@@ -15,10 +15,10 @@ namespace System.Numerics
 
         // 5.5.2
         // TODO put these in BitConverter
-/*        TOther EncodeDecimal(TSelf x);
-        TSelf DecodeDecimal(TOther x);
-        TOther EncodeBinary(TSelf x);
-        TSelf DecodeBinary(TOther x);*/
+        /*        TOther EncodeDecimal(TSelf x);
+                TSelf DecodeDecimal(TOther x);
+                TOther EncodeBinary(TSelf x);
+                TSelf DecodeBinary(TOther x);*/
 
         // 5.7.3
         static abstract bool SameQuantum(TSelf x, TSelf y);
