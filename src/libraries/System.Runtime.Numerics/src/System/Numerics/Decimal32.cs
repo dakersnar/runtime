@@ -10,9 +10,8 @@ using System.Runtime.InteropServices;
 namespace System.Numerics
 {
     /// <summary>
-    /// An IEEE 754 compliant float16 type.
+    /// An IEEE 754 compliant decimal32 type.
     /// </summary>
-    [Serializable] // TODO do we need this? Half doesn't have it, Single does.
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct Decimal32
         : IComparable<Decimal32>,
@@ -171,7 +170,7 @@ namespace System.Numerics
                 private const uint PiBits = 0; // TODO
                 private const uint TauBits = 0; // TODO*/
 
-        internal readonly uint _value; // TODO: Single places this at the top, Half places it here. Also, Single has this as private, Half has it as internal. What do we want?
+        internal readonly uint _value;
 
         //
         // Internal Constructors and Decoders
