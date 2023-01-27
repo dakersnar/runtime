@@ -518,20 +518,299 @@ namespace System.Numerics
 
 
         //
-        // Explicit Convert To Decimal32 TODO
+        // Explicit Convert To Decimal32
+        // (T -> Decimal32 is lossy)
         //
 
-        //
-        // Explicit Convert From Decimal32 TODO
-        //
+        /// <summary>Explicitly converts a <see cref="int" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator Decimal32(int value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="uint" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator Decimal32(uint value) => throw new NotImplementedException();
+
+
+        /// <summary>Explicitly converts a <see cref="nint" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(nint value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="nuint" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator Decimal32(nuint value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="long" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(long value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="ulong" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator Decimal32(ulong value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="Int128" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(Int128 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="UInt128" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator Decimal32(UInt128 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="Half" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(Half value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="float" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(float value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="double" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(double value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a <see cref="decimal" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static explicit operator Decimal32(decimal value) => throw new NotImplementedException();
+
+        // public static explicit operator Decimal32(Decimal64 value) => throw new NotImplementedException(); TODO
+        // public static explicit operator Decimal32(Decimal128 value) => throw new NotImplementedException(); TODO
 
         //
-        // Implicit Convert To Decimal32 TODO
+        // Explicit Convert From Decimal32
+        // (Decimal32 -> T is lossy)
+        // - Includes a "checked" conversion if T cannot represent infinity and NaN
         //
 
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="byte" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="byte" /> value.</returns>
+        public static explicit operator byte(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="byte" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="byte" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="byte" />.</exception>
+        public static explicit operator checked byte(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="sbyte" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="sbyte" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator sbyte(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="sbyte" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="sbyte" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="sbyte" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked sbyte(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="char" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="char" /> value.</returns>
+        public static explicit operator char(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="char" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="char" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="char" />.</exception>
+        public static explicit operator checked char(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="short" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="short" /> value.</returns>
+        public static explicit operator short(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="short" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="short" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="short" />.</exception>
+        public static explicit operator checked short(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="ushort" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="ushort" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator ushort(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="ushort" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="ushort" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="ushort" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked ushort(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="int" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="int" /> value.</returns>
+        public static explicit operator int(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="int" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="int" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="int" />.</exception>
+        public static explicit operator checked int(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="uint" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="uint" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator uint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="uint" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="uint" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="uint" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked uint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="nint" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="nint" /> value.</returns>
+        public static explicit operator nint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="nint" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="nint" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="nint" />.</exception>
+        public static explicit operator checked nint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="nuint" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="nuint" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator nuint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="nuint" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="nuint" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="nuint" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked nuint(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="long" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="long" /> value.</returns>
+        public static explicit operator long(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="long" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="long" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="long" />.</exception>
+        public static explicit operator checked long(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="ulong" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="ulong" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator ulong(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="ulong" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="ulong" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="ulong" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked ulong(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="Int128" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="Int128" /> value.</returns>
+        public static explicit operator Int128(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="Int128" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="Int128" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="Int128" />.</exception>
+        public static explicit operator checked Int128(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="UInt128" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="UInt128" /> value.</returns>
+        [CLSCompliant(false)]
+        public static explicit operator UInt128(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="UInt128" /> value, throwing an overflow exception for any values that fall outside the representable range.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="UInt128" /> value.</returns>
+        /// <exception cref="OverflowException"><paramref name="value" /> is not representable by <see cref="UInt128" />.</exception>
+        [CLSCompliant(false)]
+        public static explicit operator checked UInt128(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="Half" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="Half" /> value.</returns>
+        public static explicit operator Half(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="float" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="float" /> value.</returns>
+        public static explicit operator float(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="double" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="double" /> value.</returns>
+        public static explicit operator double(Decimal32 value) => throw new NotImplementedException();
+
+        /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="decimal" /> value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable <see cref="decimal" /> value.</returns>
+        public static explicit operator decimal(Decimal32 value) => throw new NotImplementedException();
+
         //
-        // Implicit Convert From Decimal32 TODO
+        // Implicit Convert To Decimal32
+        // (T -> Decimal32 is not lossy)
         //
+
+        /// <summary>Implicitly converts a <see cref="byte" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static implicit operator Decimal32(byte value) => throw new NotImplementedException();
+
+        /// <summary>Implicitly converts a <see cref="sbyte" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static implicit operator Decimal32(sbyte value) => throw new NotImplementedException();
+
+        /// <summary>Implicitly converts a <see cref="char" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static implicit operator Decimal32(char value) => throw new NotImplementedException();
+
+        /// <summary>Implicitly converts a <see cref="short" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        public static implicit operator Decimal32(short value) => throw new NotImplementedException();
+
+        /// <summary>Implicitly converts a <see cref="ushort" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
+        [CLSCompliant(false)]
+        public static implicit operator Decimal32(ushort value) => throw new NotImplementedException();
+
+        //
+        // Implicit Convert From Decimal32
+        // (Decimal32 -> T is not lossy)
+        //
+
+        // public static implicit operator Decimal64(Decimal32 value) => throw new NotImplementedException(); TODO
+        // public static implicit operator Decimal128(Decimal32 value) => throw new NotImplementedException(); TODO
 
         //
         // IAdditionOperators
