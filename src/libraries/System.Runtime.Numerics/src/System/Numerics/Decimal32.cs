@@ -20,7 +20,8 @@ namespace System.Numerics
           ISpanFormattable,
           ISpanParsable<Decimal32>,
           IEquatable<Decimal32>,
-          IDecimalFloatingPointIeee754<Decimal32>,
+          IFloatingPoint<Decimal32>,
+          /*IDecimalFloatingPointIeee754<Decimal32>,*/ //PLATINUM
           IMinMaxValue<Decimal32>
     {
 
@@ -685,10 +686,10 @@ namespace System.Numerics
         public static bool operator !=(Decimal32 left, Decimal32 right) => throw new NotImplementedException();
 
         //
-        // IExponentialFunctions
+        // IExponentialFunctions PLATINUM
         //
 
-        /// <inheritdoc cref="IExponentialFunctions{TSelf}.Exp" />
+/*        /// <inheritdoc cref="IExponentialFunctions{TSelf}.Exp" />
         public static Decimal32 Exp(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="IExponentialFunctions{TSelf}.ExpM1(TSelf)" />
@@ -704,7 +705,7 @@ namespace System.Numerics
         public static Decimal32 Exp10(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="IExponentialFunctions{TSelf}.Exp10M1(TSelf)" />
-        public static Decimal32 Exp10M1(Decimal32 x) => throw new NotImplementedException();
+        public static Decimal32 Exp10M1(Decimal32 x) => throw new NotImplementedException();*/
 
         //
         // IFloatingPoint
@@ -787,11 +788,11 @@ namespace System.Numerics
         /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.PositiveInfinity" />
         public static Decimal32 PositiveInfinity => new Decimal32(PositiveInfinityBits);    //  1.0 / 0.0
 
-        /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.Atan2(TSelf, TSelf)" />
-        public static Decimal32 Atan2(Decimal32 y, Decimal32 x) => throw new NotImplementedException();
+/*        /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.Atan2(TSelf, TSelf)" />
+        public static Decimal32 Atan2(Decimal32 y, Decimal32 x) => throw new NotImplementedException(); // PLATINUM
 
         /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.Atan2Pi(TSelf, TSelf)" />
-        public static Decimal32 Atan2Pi(Decimal32 y, Decimal32 x) => throw new NotImplementedException();
+        public static Decimal32 Atan2Pi(Decimal32 y, Decimal32 x) => throw new NotImplementedException();*/ // PLATINUM
 
         /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.BitDecrement(TSelf)" />
         public static Decimal32 BitDecrement(Decimal32 x) => throw new NotImplementedException();
@@ -808,6 +809,9 @@ namespace System.Numerics
         /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.ILogB(TSelf)" />
         public static int ILogB(Decimal32 x) => throw new NotImplementedException();
 
+        // /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.Lerp(TSelf)" />
+        public static Decimal32 Lerp(Decimal32 value1, Decimal32 value2, Decimal32 amount) => throw new NotImplementedException();
+
         /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.ReciprocalEstimate(TSelf)" />
         public static Decimal32 ReciprocalEstimate(Decimal32 x) => throw new NotImplementedException();
 
@@ -818,13 +822,13 @@ namespace System.Numerics
         public static Decimal32 ScaleB(Decimal32 x, int n) => throw new NotImplementedException();
 
         // /// <inheritdoc cref="IFloatingPointIeee754{TSelf}.Compound(TSelf, TSelf)" />
-        // public static Decimal32 Compound(Half x, Decimal32 n) => throw new NotImplementedException();
+        // public static Decimal32 Compound(Half x, Decimal32 n) => throw new NotImplementedException(); // PLATINUM
 
         //
-        // IHyperbolicFunctions
+        // IHyperbolicFunctions PLATINUM
         //
 
-        /// <inheritdoc cref="IHyperbolicFunctions{TSelf}.Acosh(TSelf)" />
+/*        /// <inheritdoc cref="IHyperbolicFunctions{TSelf}.Acosh(TSelf)" />
         public static Decimal32 Acosh(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="IHyperbolicFunctions{TSelf}.Asinh(TSelf)" />
@@ -840,7 +844,7 @@ namespace System.Numerics
         public static Decimal32 Sinh(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="IHyperbolicFunctions{TSelf}.Tanh(TSelf)" />
-        public static Decimal32 Tanh(Decimal32 x) => throw new NotImplementedException();
+        public static Decimal32 Tanh(Decimal32 x) => throw new NotImplementedException();*/
 
         //
         // IIncrementOperators
@@ -850,10 +854,10 @@ namespace System.Numerics
         public static Decimal32 operator ++(Decimal32 value) => throw new NotImplementedException();
 
         //
-        // ILogarithmicFunctions
+        // ILogarithmicFunctions PLATINUM
         //
 
-        /// <inheritdoc cref="ILogarithmicFunctions{TSelf}.Log(TSelf)" />
+/*        /// <inheritdoc cref="ILogarithmicFunctions{TSelf}.Log(TSelf)" />
         public static Decimal32 Log(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="ILogarithmicFunctions{TSelf}.Log(TSelf, TSelf)" />
@@ -872,7 +876,7 @@ namespace System.Numerics
         public static Decimal32 Log2P1(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="ILogarithmicFunctions{TSelf}.Log10P1(TSelf)" />
-        public static Decimal32 Log10P1(Decimal32 x) => throw new NotImplementedException();
+        public static Decimal32 Log10P1(Decimal32 x) => throw new NotImplementedException();*/
 
         //
         // IMinMaxValue
@@ -1600,24 +1604,25 @@ namespace System.Numerics
         }
 
         //
-        // IPowerFunctions
+        // IPowerFunctions // PLATINUM
         //
 
-        /// <inheritdoc cref="IPowerFunctions{TSelf}.Pow(TSelf, TSelf)" />
-        public static Decimal32 Pow(Decimal32 x, Decimal32 y) => throw new NotImplementedException();
+        /*/// <inheritdoc cref="IPowerFunctions{TSelf}.Pow(TSelf, TSelf)" />
+                public static Decimal32 Pow(Decimal32 x, Decimal32 y) => throw new NotImplementedException();*/
 
         //
         // IRootFunctions
         //
 
-        /// <inheritdoc cref="IRootFunctions{TSelf}.Cbrt(TSelf)" />
-        public static Decimal32 Cbrt(Decimal32 x) => throw new NotImplementedException();
+        /*/// <inheritdoc cref="IRootFunctions{TSelf}.Cbrt(TSelf)" />
+        public static Decimal32 Cbrt(Decimal32 x) => throw new NotImplementedException(); // PLATINUM
 
         /// <inheritdoc cref="IRootFunctions{TSelf}.Hypot(TSelf, TSelf)" />
-        public static Decimal32 Hypot(Decimal32 x, Decimal32 y) => throw new NotImplementedException();
+        public static Decimal32 Hypot(Decimal32 x, Decimal32 y) => throw new NotImplementedException(); // PLATINUM
+
 
         /// <inheritdoc cref="IRootFunctions{TSelf}.RootN(TSelf, int)" />
-        public static Decimal32 RootN(Decimal32 x, int n) => throw new NotImplementedException();
+        public static Decimal32 RootN(Decimal32 x, int n) => throw new NotImplementedException();*/ // PLATINUM
 
         /// <inheritdoc cref="IRootFunctions{TSelf}.Sqrt(TSelf)" />
         public static Decimal32 Sqrt(Decimal32 x) => throw new NotImplementedException();
@@ -1637,10 +1642,10 @@ namespace System.Numerics
         public static Decimal32 operator -(Decimal32 left, Decimal32 right) => throw new NotImplementedException();
 
         //
-        // ITrigonometricFunctions
+        // ITrigonometricFunctions PLATINUM
         //
 
-        /// <inheritdoc cref="ITrigonometricFunctions{TSelf}.Acos(TSelf)" />
+/*        /// <inheritdoc cref="ITrigonometricFunctions{TSelf}.Acos(TSelf)" />
         public static Decimal32 Acos(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="ITrigonometricFunctions{TSelf}.AcosPi(TSelf)" />
@@ -1680,7 +1685,7 @@ namespace System.Numerics
         public static Decimal32 Tan(Decimal32 x) => throw new NotImplementedException();
 
         /// <inheritdoc cref="ITrigonometricFunctions{TSelf}.TanPi(TSelf)" />
-        public static Decimal32 TanPi(Decimal32 x) => throw new NotImplementedException();
+        public static Decimal32 TanPi(Decimal32 x) => throw new NotImplementedException();*/
 
         //
         // IUnaryNegationOperators
