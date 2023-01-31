@@ -575,7 +575,7 @@ namespace System.Numerics
         /// <summary>Explicitly converts a <see cref="float" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
         /// <param name="value">The value to convert.</param>
         /// <returns><paramref name="value" /> converted to its nearest representable 32-bit decimal floating-point value.</returns>
-        public static explicit operator Decimal32(float value) => throw new NotImplementedException();
+        public static explicit operator Decimal32(float value) => IeeeDecimalNumber.SingleToDecimal32(value);
 
         /// <summary>Explicitly converts a <see cref="double" /> value to its nearest representable 32-bit decimal floating-point value.</summary>
         /// <param name="value">The value to convert.</param>
@@ -759,7 +759,7 @@ namespace System.Numerics
         /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="float" /> value.</summary>
         /// <param name="value">The value to convert.</param>
         /// <returns><paramref name="value" /> converted to its nearest representable <see cref="float" /> value.</returns>
-        public static explicit operator float(Decimal32 value) => throw new NotImplementedException();
+        public static explicit operator float(Decimal32 value) => IeeeDecimalNumber.Decimal32ToSingle(value);
 
         /// <summary>Explicitly converts a 32-bit decimal floating-point value to its nearest representable <see cref="double" /> value.</summary>
         /// <param name="value">The value to convert.</param>

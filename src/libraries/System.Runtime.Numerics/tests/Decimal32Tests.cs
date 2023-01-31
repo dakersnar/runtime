@@ -10,6 +10,55 @@ namespace System.Numerics.Tests
 {
     public partial class Decimal32Tests
     {
+
+        public static IEnumerable<object[]> ExplicitConversion_ToSingle_TestData()
+        {
+            (Decimal32 Original, float Expected)[] data =
+            {
+                (new Decimal32(false, 0, 1), 1f), // 1
+                (new Decimal32(true, 0, 1), -1f), // -1
+                (new Decimal32(0x00000001), BitConverter.UInt32BitsToSingle(0x00000000)), // example test cases from the Intel C code
+                (new Decimal32(0x2c866feb), BitConverter.UInt32BitsToSingle(0x34e27cf5)),
+
+            };
+
+            foreach ((Decimal32 original, float expected) in data)
+            {
+                yield return new object[] { original, expected };
+            }
+        }
+
+        [MemberData(nameof(ExplicitConversion_ToSingle_TestData))]
+        [Theory]
+        public static void ExplicitConversion_ToSingle(Decimal32 value, float expected) // Check the underlying bits for verifying NaNs
+        {
+            float f = (float)value;
+            Assert.Equal(BitConverter.SingleToInt32Bits(expected), BitConverter.SingleToInt32Bits(f));
+        }
+
+        public static IEnumerable<object[]> ExplicitConversion_FromSingle_TestData()
+        {
+            (float original, Decimal32 expected)[] data =
+            {
+                (1f, new Decimal32(false, 0, 1)), // 1
+                (-1f, new Decimal32(true, 0, 1)), // -1
+                (BitConverter.UInt32BitsToSingle(0x2c013e62), new Decimal32(0x299c0677)), // example test case from the Intel C code
+            };
+
+            foreach ((float original, Decimal32 expected) in data)
+            {
+                yield return new object[] { original, expected };
+            }
+        }
+
+        [MemberData(nameof(ExplicitConversion_FromSingle_TestData))]
+        [Theory]
+        public static void ExplicitConversion_FromSingle(float f, Decimal32 expected) // Check the underlying bits for verifying NaNs
+        {
+            Decimal32 h = (Decimal32)f;
+            Assert.Equal(expected._value, h._value);
+        }
+
         public static IEnumerable<object[]> Parse_Valid_TestData()
         {
             NumberStyles defaultStyle = NumberStyles.Float | NumberStyles.AllowThousands;
