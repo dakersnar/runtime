@@ -452,6 +452,16 @@ namespace System.Numerics
             throw new NotImplementedException();
         }
 
+        // 5.5.2 of the IEEE Spec
+        [CLSCompliant(false)]
+        public static uint EncodeDecimal(Decimal32 x) => throw new NotImplementedException();
+        [CLSCompliant(false)]
+        public static Decimal32 DecodeDecimal(uint x) => throw new NotImplementedException();
+        [CLSCompliant(false)]
+        public static uint EncodeBinary(Decimal32 x) => throw new NotImplementedException();
+        [CLSCompliant(false)]
+        public static Decimal32 DecodeBinary(uint x) => throw new NotImplementedException();
+
         //
         // Formatting (IFormattable, ISpanFormattable)
         //

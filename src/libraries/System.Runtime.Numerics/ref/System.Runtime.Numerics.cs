@@ -412,6 +412,14 @@ namespace System.Numerics
         public static System.Numerics.Decimal32 CreateChecked<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
         public static System.Numerics.Decimal32 CreateSaturating<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
         public static System.Numerics.Decimal32 CreateTruncating<TOther>(TOther value) where TOther : System.Numerics.INumberBase<TOther> { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static System.Numerics.Decimal32 DecodeBinary(uint x) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static System.Numerics.Decimal32 DecodeDecimal(uint x) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static uint EncodeBinary(System.Numerics.Decimal32 x) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static uint EncodeDecimal(System.Numerics.Decimal32 x) { throw null; }
         public bool Equals(System.Numerics.Decimal32 other) { throw null; }
         public override bool Equals([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] object? obj) { throw null; }
         public static System.Numerics.Decimal32 Floor(System.Numerics.Decimal32 x) { throw null; }
