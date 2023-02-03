@@ -14,7 +14,7 @@ namespace System.Numerics
         static abstract TSelf Quantum(TSelf x);
 
         // 5.5.2
-        // TODO put these in BitConverter
+        // Maybe expose this on this interface
         /*        TOther EncodeDecimal(TSelf x);
                 TSelf DecodeDecimal(TOther x);
                 TOther EncodeBinary(TSelf x);
