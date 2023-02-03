@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="System\Numerics\Decimal32.cs" />
+    <Compile Include="System\Numerics\Decimal64.cs" />
     <Compile Include="System\Numerics\IDecimalFloatingPointIeee754.cs" />
     <Compile Include="System\Numerics\IeeeDecimalNumber.Parsing.cs" />
     <Compile Include="System\ThrowHelper.cs" />
