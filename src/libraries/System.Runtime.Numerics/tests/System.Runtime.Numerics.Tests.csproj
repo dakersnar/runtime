@@ -59,6 +59,7 @@
     <Compile Include="BigIntegerTests.GenericMath.cs" />
     <Compile Include="ComplexTests.GenericMath.cs" />
     <Compile Include="Decimal32Tests.cs" />
+    <Compile Include="Decimal64Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- Some internal types are needed, so we reference the implementation assembly, rather than the reference assembly. -->
