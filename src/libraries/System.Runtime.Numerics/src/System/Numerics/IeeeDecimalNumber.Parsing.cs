@@ -19,6 +19,7 @@ namespace System.Numerics
         // IeeeDecimalNumberBuffer
 
         internal const int Decimal32BufferLength = 112 + 1 + 1; // TODO: X for the longest input + 1 for rounding (+1 for the null terminator). I just picked 112 cause that's what Single does for now.
+        internal const int Decimal64BufferLength = 767 + 1 + 1; // TODO: X for the longest input + 1 for rounding (+1 for the null terminator). I just picked 767 cause that's what Double does for now.
 
         internal unsafe ref struct IeeeDecimalNumberBuffer
         {
@@ -134,6 +135,8 @@ namespace System.Numerics
         // Max and Min Exponent assuming the value is in the form 0.Mantissa x 10^Exponent
         private const int Decimal32MaxExponent = Decimal32.MaxQExponent + Decimal32.Precision; // TODO check this
         private const int Decimal32MinExponent = Decimal32.MinQExponent + Decimal32.Precision; // TODO check this, possibly wrong
+        private const int Decimal64MaxExponent = Decimal64.MaxQExponent + Decimal64.Precision; // TODO check this
+        private const int Decimal64MinExponent = Decimal64.MinQExponent + Decimal64.Precision; // TODO check this, possibly wrong
 
         [DoesNotReturn]
         internal static void ThrowFormatException(ReadOnlySpan<char> value) => throw new FormatException(/*SR.Format(SR.Format_InvalidStringWithValue,*/ value.ToString()/*)*/); // TODO get this to work
@@ -141,6 +144,16 @@ namespace System.Numerics
         internal static Decimal32 ParseDecimal32(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
         {
             if (!TryParseDecimal32(value, styles, info, out Decimal32 result))
+            {
+                ThrowFormatException(value);
+            }
+
+            return result;
+        }
+
+        internal static Decimal64 ParseDecimal64(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info)
+        {
+            if (!TryParseDecimal64(value, styles, info, out Decimal64 result))
             {
                 ThrowFormatException(value);
             }
@@ -214,6 +227,77 @@ namespace System.Numerics
             else
             {
                 result = NumberToDecimal32(ref number);
+            }
+
+            return true;
+        }
+
+        internal static unsafe bool TryParseDecimal64(ReadOnlySpan<char> value, NumberStyles styles, NumberFormatInfo info, out Decimal64 result)
+        {
+            IeeeDecimalNumberBuffer number = new IeeeDecimalNumberBuffer(stackalloc byte[Decimal64BufferLength]);
+
+            if (!TryStringToNumber(value, styles, ref number, info))
+            {
+                ReadOnlySpan<char> valueTrim = value.Trim();
+
+                // This code would be simpler if we only had the concept of `InfinitySymbol`, but
+                // we don't so we'll check the existing cases first and then handle `PositiveSign` +
+                // `PositiveInfinitySymbol` and `PositiveSign/NegativeSign` + `NaNSymbol` last.
+                //
+                // Additionally, since some cultures ("wo") actually define `PositiveInfinitySymbol`
+                // to include `PositiveSign`, we need to check whether `PositiveInfinitySymbol` fits
+                // that case so that we don't start parsing things like `++infini`.
+
+                if (valueTrim.Equals(info.PositiveInfinitySymbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = Decimal64.PositiveInfinity;
+                }
+                else if (valueTrim.Equals(info.NegativeInfinitySymbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = Decimal64.NegativeInfinity;
+                }
+                else if (valueTrim.Equals(info.NaNSymbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = Decimal64.NaN;
+                }
+                else if (valueTrim.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase))
+                {
+                    valueTrim = valueTrim.Slice(info.PositiveSign.Length);
+
+                    if (!info.PositiveInfinitySymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.Equals(info.PositiveInfinitySymbol, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result = Decimal64.PositiveInfinity;
+                    }
+                    else if (!info.NaNSymbol.StartsWith(info.PositiveSign, StringComparison.OrdinalIgnoreCase) && valueTrim.Equals(info.NaNSymbol, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result = Decimal64.NaN;
+                    }
+                    else
+                    {
+                        result = Decimal64.Zero;
+                        return false;
+                    }
+                }
+                else if (valueTrim.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         valueTrim.Slice(info.NegativeSign.Length).Equals(info.NaNSymbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = Decimal64.NaN;
+                }
+                else if (info.AllowHyphenDuringParsing && SpanStartsWith(valueTrim, '-') && !info.NaNSymbol.StartsWith(info.NegativeSign, StringComparison.OrdinalIgnoreCase) &&
+                         !info.NaNSymbol.StartsWith('-') && valueTrim.Slice(1).Equals(info.NaNSymbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    result = Decimal64.NaN;
+                }
+                else
+                {
+                    result = Decimal64.Zero;
+                    return false; // We really failed
+                }
+            }
+            else
+            {
+                result = NumberToDecimal64(ref number);
             }
 
             return true;
@@ -665,6 +749,114 @@ namespace System.Numerics
                 }
                 Debug.Assert(q >= Decimal32.MinQExponent && q <= Decimal32.MaxQExponent);
                 return new Decimal32(number.IsNegative, (sbyte)q, c);
+            }
+        }
+
+        internal static unsafe Decimal64 NumberToDecimal64(ref IeeeDecimalNumberBuffer number)
+        {
+            number.CheckConsistency();
+
+            if ((number.DigitsCount == 0) || (number.Scale < Decimal64MinExponent)) // TODO double check this
+            {
+                // TODO are we sure this is the "right" zero to return in all these cases
+                return number.IsNegative ? Decimal64.NegativeZero : Decimal64.Zero;
+            }
+            else if (number.Scale > Decimal64MaxExponent) // TODO double check this
+            {
+                return number.IsNegative ? Decimal64.NegativeInfinity : Decimal64.PositiveInfinity;
+            }
+            else
+            {
+                // The input value is of the form 0.Mantissa x 10^Exponent, where 'Mantissa' are
+                // the decimal digits of the mantissa and 'Exponent' is the decimal exponent.
+                // We want to extract q (the exponent) and c (the significand) such that
+                // value = c * 10 ^ q
+                // Which means
+                // c = first N digits of Mantissa, where N is min(Decimal64.Precision, number.DigitsCount)
+                // q = Exponent - N
+
+                byte* mantissa = number.GetDigitsPointer();
+
+                int q = number.Scale;
+                byte* mantissaPointer = number.GetDigitsPointer();
+                uint c = 0;
+
+                int i;
+                for (i = 0; i < number.DigitsCount; i++)
+                {
+                    if (i >= Decimal64.Precision)
+                    {
+                        // We have more digits than the precision allows
+                        break;
+                    }
+
+                    q--;
+                    c *= 10;
+                    c += (uint)(mantissa[i] - '0');
+                }
+
+                if (i < number.DigitsCount)
+                {
+                    // We have more digits than the precision allows, we might need to round up
+                    // roundUp = (next digit > 5)
+                    //        || ((next digit == 5) && (trailing digits || current digit is odd)
+                    bool roundUp = false;
+
+                    if (mantissa[i] > '5')
+                    {
+                        roundUp = true;
+                    }
+                    else if (mantissa[i] == '5')
+                    {
+
+                        if ((c & 1) == 1)
+                        {
+                            // current digit is odd, round to even regardless of whether or not we have trailing digits
+                            roundUp = true;
+
+                        }
+                        else
+                        {
+                            // Current digit is even, but there might be trailing digits that cause us to round up anyway
+                            // We might still have some additional digits, in which case they need
+                            // to be considered as part of hasZeroTail. Some examples of this are:
+                            //  * 3.0500000000000000000001e-27
+                            //  * 3.05000000000000000000001e-27
+                            // In these cases, we will have processed 3 and 0, and ended on 5. The
+                            // buffer, however, will still contain a number of trailing zeros and
+                            // a trailing non-zero number.
+
+                            bool hasZeroTail = !number.HasNonZeroTail;
+                            i++;
+                            while ((mantissa[i] != 0) && hasZeroTail)
+                            {
+                                hasZeroTail &= (mantissa[i] == '0');
+                                i++;
+                            }
+
+                            // We should either be at the end of the stream or have a non-zero tail
+                            Debug.Assert((mantissa[i] == 0) || !hasZeroTail);
+
+                            if (!hasZeroTail)
+                            {
+                                // If the next digit is 5 with a non-zero tail we must round up
+                                roundUp = true;
+                            }
+                        }
+
+                    }
+
+                    if (roundUp)
+                    {
+                        if (++c > Decimal64.MaxSignificand)
+                        {
+                            // We have rounded up to Infinity, return early
+                            return number.IsNegative ? Decimal64.NegativeInfinity : Decimal64.PositiveInfinity;
+                        }
+                    }
+                }
+                Debug.Assert(q >= Decimal64.MinQExponent && q <= Decimal64.MaxQExponent);
+                return new Decimal64(number.IsNegative, (sbyte)q, c);
             }
         }
 
