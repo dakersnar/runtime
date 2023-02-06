@@ -779,7 +779,7 @@ namespace System.Numerics
 
                 int q = number.Scale;
                 byte* mantissaPointer = number.GetDigitsPointer();
-                uint c = 0;
+                ulong c = 0;
 
                 int i;
                 for (i = 0; i < number.DigitsCount; i++)
@@ -792,7 +792,7 @@ namespace System.Numerics
 
                     q--;
                     c *= 10;
-                    c += (uint)(mantissa[i] - '0');
+                    c += (ulong)(mantissa[i] - '0');
                 }
 
                 if (i < number.DigitsCount)
@@ -856,7 +856,7 @@ namespace System.Numerics
                     }
                 }
                 Debug.Assert(q >= Decimal64.MinQExponent && q <= Decimal64.MaxQExponent);
-                return new Decimal64(number.IsNegative, (sbyte)q, c);
+                return new Decimal64(number.IsNegative, (short)q, c);
             }
         }
 

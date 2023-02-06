@@ -30,153 +30,150 @@ namespace System.Numerics
         // Constants for manipulating the private bit-representation
         //
 
-        internal const uint SignMask = 0x8000_0000;
-        internal const int SignShift = 31;
+        internal const ulong SignMask = 0x8000_0000_0000_0000;
+        internal const int SignShift = 63;
 
-        internal const uint CombinationMask = 0x7FF0_0000;
-        internal const int CombinationShift = 20;
-        internal const int CombinationWidth = 11;
+        internal const ulong CombinationMask = 0x7FFC_0000_0000_0000;
+        internal const int CombinationShift = 50;
+        internal const int CombinationWidth = 13;
         internal const ushort ShiftedCombinationMask = (ushort)(CombinationMask >> CombinationShift);
 
-        internal const uint TrailingSignificandMask = 0x000F_FFFF;
-        internal const int TrailingSignificandWidth = 20;
+        internal const ulong TrailingSignificandMask = 0x0003_FFFF_FFFF_FFFF;
+        internal const int TrailingSignificandWidth = 50;
 
-        internal const sbyte EMax = 96;
-        internal const sbyte EMin = -95;
+        internal const short EMax = 384;
+        internal const short EMin = -383;
 
-        internal const byte Precision = 7;
-        internal const byte ExponentBias = 101;
+        internal const byte Precision = 16;
+        internal const ushort ExponentBias = 398;
 
-        internal const sbyte MaxQExponent = EMax - Precision + 1;
-        internal const sbyte MinQExponent = EMin - Precision + 1;
+        internal const short MaxQExponent = EMax - Precision + 1;
+        internal const short MinQExponent = EMin - Precision + 1;
 
-        internal const int MaxSignificand = 9999999;
-        internal const int MinSignificand = -9999999;
+        internal const long MaxSignificand = 9_999_999_999_999_999; // 16 digits
+        internal const long MinSignificand = -9_999_999_999_999_999; // 16 digits
 
         // The 5 bits that classify the value as NaN, Infinite, or Finite
         // If the Classification bits are set to 11111, the value is NaN
         // If the Classification bits are set to 11110, the value is Infinite
         // Otherwise, the value is Finite
-        internal const uint ClassificationMask = 0x7C00_0000;
-        internal const uint NaNMask = 0x7C00_0000;
-        internal const uint InfinityMask = 0x7800_0000;
+        internal const ulong ClassificationMask = 0x7C00_0000_0000_0000;
+        internal const ulong NaNMask = 0x7C00_0000_0000_0000;
+        internal const ulong InfinityMask = 0x7800_0000_0000_0000;
 
         // If the Classification bits are set to 11XXX, we encode the significand one way. Otherwise, we encode it a different way
-        internal const uint FiniteNumberClassificationMask = 0x6000_0000;
+        internal const ulong FiniteNumberClassificationMask = 0x6000_0000_0000_0000;
 
-        // Finite significands are encoded in two different ways. Encoding type can be selected based on whether or not this bit is set in the decoded significand.
-        internal const uint SignificandEncodingTypeMask = 0x0080_0000;
+        // Finite significands are encoded in two different ways, depending on whether the most significant 4 bits of the significand are 0xxx or 100x. Test the MSB to classify.
+        internal const ulong SignificandEncodingTypeMask = 1UL << (TrailingSignificandWidth + 3);
 
         // Constants representing the private bit-representation for various default values.
         // See either IEEE-754 2019 section 3.5 or https://en.wikipedia.org/wiki/Decimal64_floating-point_format for a breakdown of the encoding.
 
         // PositiveZero Bits
-        // Hex:                   0x0000_0000
-        // Binary:                0000_0000_0000_0000_0000_0000_0000_0000
-        // Split into sections:   0 | 000_0000_0 | 000_0000_0000_0000_0000_0000
-        //                        0 | 0000_0000  | 000_0000_0000_0000_0000_0000
+        // Hex:                   0x0000_0000_0000_0000
+        // Binary:                0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Split into sections:   0 | 000_0000_000 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
         // Section labels:        a | b          | c
         //
         // a. Sign bit.
-        // b. Biased Exponent, which is q + 101. 0000_0000 == 0 == -101 + 101, so this is encoding a q of -101.
+        // b. Biased Exponent, which is q + ExponentBias (398). 000_0000_000 == 0 == -398 + 398, so this is encoding a q of -398.
         // c. Significand, set to 0.
         //
-        // Encoded value:         0 x 10^-101
+        // Encoded value:         0 x 10^-398
 
-        private const uint PositiveZeroBits = 0x0000_0000;
-        private const uint NegativeZeroBits = SignMask | PositiveZeroBits;
+        private const ulong PositiveZeroBits = 0x0000_0000_0000_0000;
+        private const ulong NegativeZeroBits = SignMask | PositiveZeroBits;
 
 
         // Epsilon Bits
-        // Hex:                   0x0000_0001
-        // Binary:                0000_0000_0000_0000_0000_0000_0000_0001
-        // Split into sections:   0 | 000_0000_0 | 000_0000_0000_0000_0000_0001
-        //                        0 | 0000_0000  | 000_0000_0000_0000_0000_0001
+        // Hex:                   0x0000_0000_0000_0001
+        // Binary:                0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
+        // Split into sections:   0 | 000_0000_000 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
         // Section labels:        a | b          | c
         //
         // a. Sign bit.
-        // b. Biased Exponent, which is q + 101. 0000_0000 == 0 == -101 + 101, so this is encoding a q of -101.
+        // b. Biased Exponent, which is q + ExponentBias (398). 000_0000_000 == 0 == -398 + 398, so this is encoding a q of -398.
         // c. Significand, set to 1.
         //
-        // Encoded value:         1 x 10^-101
+        // Encoded value:         1 x 10^-398
 
-        private const uint EpsilonBits = 0x0000_0001;
+        private const ulong EpsilonBits = 0x0000_0000_0000_0001;
 
         // PositiveInfinityBits
-        // Hex:                   0x7800_0000
-        // Binary:                0111_1000_0000_0000_0000_0000_0000_0000
-        // Split into sections:   0 | 111_1000_0000 | 0000_0000_0000_0000_0000
-        // Section labels:        a | b             | c
+        // Hex:                   0x7800_0000_0000_0000
+        // Binary:                0111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Split into sections:   0 | 111_1000_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Section labels:        a | b            | c
         //
         // a. Sign bit.
-        // b. Combination field G0 through G10. G0-G4 == 11110 encodes infinity.
+        // b. Combination field G0 through G12. G0-G4 == 11110 encodes infinity.
         // c. Trailing significand.
         // Note: Canonical infinity has everything after G5 set to 0.
 
-        private const uint PositiveInfinityBits = 0x7800_0000;
-        private const uint NegativeInfinityBits = SignMask | PositiveInfinityBits;
+        private const ulong PositiveInfinityBits = 0x7800_0000_0000_0000;
+        private const ulong NegativeInfinityBits = SignMask | PositiveInfinityBits;
 
-
-        // QNanBits
-        // Hex:                   0x7C00_0000
-        // Binary:                0111_1100_0000_0000_0000_0000_0000_0000
-        // Split into sections:   0 | 111_1100_0000 | 0000_0000_0000_0000_0000
-        // Section labels:        a | b             | c
+        // QNanBits Bits
+        // Hex:                   0x7C00_0000_0000_0000
+        // Binary:                0111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Split into sections:   0 | 111_1100_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Section labels:        a | b            | c
         //
         // a. Sign bit (ignored for NaN).
-        // b. Combination field G0 through G10. G0-G4 == 11111 encodes NaN.
+        // b. Combination field G0 through G12. G0-G4 == 11111 encodes NaN.
         // c. Trailing significand. Can be used to encode a payload, to distinguish different NaNs.
-        // Note: Canonical NaN has G6-G10 as 0 and the encoding of the payload also canonical.
+        // Note: Canonical NaN has G6-G12 as 0 and the encoding of the payload also canonical.
 
-        private const uint QNanBits = 0x7C00_0000; // TODO I used a "positive" NaN here, should it be negative?
-        private const uint SNanBits = 0x7E00_0000;
+        private const ulong QNanBits = 0x7C00_0000_0000_0000; // TODO I used a "positive" NaN here, should it be negative?
+        private const ulong SNanBits = 0x7E00_0000_0000_0000;
 
 
         // MaxValueBits
-        // Hex:                   0x77F8_967F
-        // Binary:                0111_0111_1111_1000_1001_0110_0111_1111
-        // Split into sections:   0 | 11 | 1_0111_111 | 1_1000_1001_0110_0111_1111
-        //                        0 | 11 | 1011_1111  | [100]1_1000_1001_0110_0111_1111
-        // Section labels:        a | b  | c          | d
+        // Hex:                   0x77FB_86F2_6FC0_FFFF
+        // Binary:                0111_0111_1111_1011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
+        // Split into sections:   0 | 11 | 1_0111_1111_1 | 011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
+        //                        0 | 11 | 10_1111_1111 | [10_0]011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
+        // Section labels:        a | b  | c            | d
         //
         // a. Sign bit.
         // b. G0 and G1 of the combination field, "11" indicates this version of encoding.
-        // c. Biased Exponent, which is q + 101. 1011_1111 == 191 == 90 + 101, so this is encoding an q of 90.
-        // d. Significand. Section b. indicates an implied prefix of [100]. [100]1_1000_1001_0110_0111_1111 == 9,999,999.
+        // c. Biased Exponent, which is q + ExponentBias (398). 10_1111_1111 == 767 == 369 + 398, so this is encoding a q of 369 (which is MaxQExponent).
+        // d. Significand. Section b. indicates an implied prefix of [100]. [10_0]011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111 == 9,999,999,999,999,999.
         //
-        // Encoded value:         9,999,999 x 10^90
+        // Encoded value:         9,999,999,999,999,999 x 10^369
 
-        private const uint MaxValueBits = 0x77F8_967F;
-        private const uint MinValueBits = SignMask | MaxValueBits;
+        private const ulong MaxValueBits = 0x77FB_86F2_6FC0_FFFF;
+        private const ulong MinValueBits = SignMask | MaxValueBits;
 
         // PositiveOneBits Bits
-        // Hex:                   0x3280_0001
-        // Binary:                0011_0010_1000_0000_0000_0000_0000_0001
-        // Split into sections:   0 | 011_0010_1 | 000_0000_0000_0000_0000_0001
-        //                        0 | 0110_0101  | 000_0000_0000_0000_0000_0001
-        // Section labels:        a | b          | c
+        // Hex:                   0x2CA0_0000_0000_0001
+        // Binary:                0010_1100_1010_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
+        // Split into sections:   0 | 010_1100_101 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
+        //                        0 | 01_0110_0101 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
+        // Section labels:        a | b            | c
         //
         // a. Sign bit.
-        // b. Biased Exponent, which is q + 101. 0110_0101 == 101 == 0 + 101, so this is encoding an q of 0.
+        // b. Biased Exponent, which is q + ExponentBias (398). 01_0110_0101 == 398 == 0 + 398, so this is encoding a q of 0.
         // c. Significand, set to 1.
         //
         // Encoded value:         1 x 10^0
 
-        private const uint PositiveOneBits = 0x3280_0001;
-        private const uint NegativeOneBits = SignMask | PositiveOneBits;
+        private const ulong PositiveOneBits = 0x2CA0_0000_0000_0001; // TODO write a unit test for all these constants
+        private const ulong NegativeOneBits = SignMask | PositiveOneBits;
 
         /*
-                private const uint EBits = 0; // TODO
-                private const uint PiBits = 0; // TODO
-                private const uint TauBits = 0; // TODO*/
+                private const ulong EBits = 0; // TODO
+                private const ulong PiBits = 0; // TODO
+                private const ulong TauBits = 0; // TODO*/
 
-        internal readonly uint _value;
+        internal readonly ulong _value;
 
         //
         // Internal Constructors and Decoders
         //
 
-        internal Decimal64(uint value)
+        internal Decimal64(ulong value)
         {
             _value = value;
         }
@@ -186,52 +183,52 @@ namespace System.Numerics
         // * q is any integer MinQExponent <= q <= MaxQExponent
         // * c is the significand represented by a digit string of the form
         //   `d0 d1 d2 ... dp-1`, where p is Precision. c is an integer with 0 <= c < 10^p.
-        internal Decimal64(bool sign, sbyte q, uint c)
+        internal Decimal64(bool sign, short q, ulong c)
         {
             Debug.Assert(q >= MinQExponent && q <= MaxQExponent);
             Debug.Assert(q + ExponentBias >= 0);
             Debug.Assert(c <= MaxSignificand);
 
-            uint trailing_sig = c & TrailingSignificandMask;
+            ulong trailing_sig = c & TrailingSignificandMask;
 
             // Two types of combination encodings for finite numbers
-            uint combination = 0;
+            ulong combination = 0;
 
             if ((c & SignificandEncodingTypeMask) == 0)
             {
                 // We are encoding a significand that has the most significand 4 bits set to 0xyz
-                combination |= (uint)(q + ExponentBias) << 3;
+                combination |= (ulong)(q + ExponentBias) << 3;
                 combination |= 0b0111 & (c >> TrailingSignificandWidth); // combination = (biased_exponent, xyz)
             }
             else
             {
                 // We are encoding a significand that has the most significand 4 bits set to 100x
                 combination |= 0b11 << (CombinationWidth - 2);
-                combination |= (uint)(q + ExponentBias) << 1;
+                combination |= (ulong)(q + ExponentBias) << 1;
                 combination |= 0b0001 & (c >> CombinationShift); // combination = (11, biased_exponent, x)
             }
 
-            _value = (uint)(((sign ? 1 : 0) << SignShift) + (combination << CombinationShift) + trailing_sig);
+            _value = ((sign ? 1UL : 0UL) << SignShift) + (combination << CombinationShift) + trailing_sig;
         }
 
-        internal byte BiasedExponent
+        internal ushort BiasedExponent
         {
             get
             {
-                uint bits = _value;
+                ulong bits = _value;
                 return ExtractBiasedExponentFromBits(bits);
             }
         }
 
-        internal sbyte Exponent
+        internal short Exponent
         {
             get
             {
-                return (sbyte)(BiasedExponent - ExponentBias);
+                return (short)(BiasedExponent - ExponentBias);
             }
         }
 
-        internal uint Significand
+        internal ulong Significand
         {
             get
             {
@@ -239,7 +236,7 @@ namespace System.Numerics
             }
         }
 
-        internal uint TrailingSignificand
+        internal ulong TrailingSignificand
         {
             get
             {
@@ -248,7 +245,7 @@ namespace System.Numerics
         }
 
         // returns garbage for infinity and NaN, TODO maybe fix this
-        internal static byte ExtractBiasedExponentFromBits(uint bits)
+        internal static ushort ExtractBiasedExponentFromBits(ulong bits)
         {
             ushort combination = (ushort)((bits >> CombinationShift) & ShiftedCombinationMask);
 
@@ -256,31 +253,31 @@ namespace System.Numerics
             if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
             {
                 // G0 and G1 are 11, exponent is stored in G2:G(CombinationWidth - 1)
-                return (byte)(combination >> 1);
+                return (ushort)(combination >> 1);
             }
             else
             {
                 // G0 and G1 are not 11, exponent is stored in G0:G(CombinationWidth - 3)
-                return (byte)(combination >> 3);
+                return (ushort)(combination >> 3);
             }
         }
 
         // returns garbage for infinity and NaN, TODO maybe fix this
-        internal static uint ExtractSignificandFromBits(uint bits)
+        internal static ulong ExtractSignificandFromBits(ulong bits)
         {
             ushort combination = (ushort)((bits >> CombinationShift) & ShiftedCombinationMask);
 
             // Two types of encodings for finite numbers
-            uint significand;
+            ulong significand;
             if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
             {
                 // G0 and G1 are 11, 4 MSBs of significand are 100x, where x is G(CombinationWidth)
-                significand = (uint)(0b1000 | (combination & 0b1));
+                significand = (ulong)(0b1000 | (combination & 0b1));
             }
             else
             {
                 // G0 and G1 are not 11, 4 MSBs of significand are 0xyz, where G(CombinationWidth - 2):G(CombinationWidth)
-                significand = (uint)(combination & 0b111);
+                significand = (ulong)(combination & 0b111);
             }
             significand <<= TrailingSignificandWidth;
             significand += bits & TrailingSignificandMask;
@@ -290,10 +287,10 @@ namespace System.Numerics
         // IEEE 754 specifies NaNs to be propagated
         internal static Decimal64 Negate(Decimal64 value)
         {
-            return IsNaN(value) ? value : new Decimal64((ushort)(value._value ^ SignMask));
+            return IsNaN(value) ? value : new Decimal64(value._value ^ SignMask);
         }
 
-        private static uint StripSign(Decimal64 value)
+        private static ulong StripSign(Decimal64 value)
         {
             return value._value & ~SignMask;
         }
@@ -495,7 +492,7 @@ namespace System.Numerics
         /// </summary>
         public string ToString([StringSyntax(StringSyntaxAttribute.NumericFormat)] string? format, IFormatProvider? provider) // TODO the interface calls this second param "formatProvider". Which do we want?
         {
-            // Temporary Formatting for debugging
+            // TODO this is temporary Formatting for debugging
             if (IsNaN(this))
             {
                 return "NaN";
@@ -890,14 +887,23 @@ namespace System.Numerics
         //
 
         // Fast access for 10^n where n is 0:(Precision - 1)
-        private static readonly uint[] s_powers10 = new uint[] {
+        private static readonly ulong[] s_powers10 = new ulong[] {
                 1,
                 10,
                 100,
                 1000,
                 10000,
                 100000,
-                1000000
+                1000000,
+                10000000,
+                100000000,
+                1000000000,
+                10000000000,
+                100000000000,
+                1000000000000,
+                10000000000000,
+                100000000000000,
+                1000000000000000
         };
 
         /// <inheritdoc cref="IEqualityOperators{TSelf, TOther, TResult}.op_Equality(TSelf, TOther)" />
@@ -931,10 +937,10 @@ namespace System.Numerics
 
             // IEEE defines that two values of the same cohort are numerically equivalent
 
-            uint leftSignificand = left.Significand;
-            uint rightSignificand = right.Significand;
-            sbyte leftQ = left.Exponent;
-            sbyte rightQ = right.Exponent;
+            ulong leftSignificand = left.Significand;
+            ulong rightSignificand = right.Significand;
+            short leftQ = left.Exponent;
+            short rightQ = right.Exponent;
             int diffQ = leftQ - rightQ;
 
             bool sameNumericalValue = false;
