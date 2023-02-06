@@ -64,8 +64,8 @@ namespace System.Numerics
         // If the Classification bits are set to 11XXX, we encode the significand one way. Otherwise, we encode it a different way
         internal const uint FiniteNumberClassificationMask = 0x6000_0000;
 
-        // Finite significands are encoded in two different ways. Encoding type can be selected based on whether or not this bit is set in the decoded significand.
-        internal const uint SignificandEncodingTypeMask = 0x0080_0000;
+        // Finite significands are encoded in two different ways, depending on whether the most significant 4 bits of the significand are 0xxx or 100x. Test the MSB to classify.
+        internal const uint SignificandEncodingTypeMask = 1 << (TrailingSignificandWidth + 3);
 
         // Constants representing the private bit-representation for various default values.
         // See either IEEE-754 2019 section 3.5 or https://en.wikipedia.org/wiki/Decimal32_floating-point_format for a breakdown of the encoding.
@@ -141,7 +141,7 @@ namespace System.Numerics
         //
         // a. Sign bit.
         // b. G0 and G1 of the combination field, "11" indicates this version of encoding.
-        // c. Biased Exponent, which is q + 101. 1011_1111 == 191 == 90 + 101, so this is encoding an q of 90.
+        // c. Biased Exponent, which is q + 101. 1011_1111 == 191 == 90 + 101, so this is encoding a q of 90.
         // d. Significand. Section b. indicates an implied prefix of [100]. [100]1_1000_1001_0110_0111_1111 == 9,999,999.
         //
         // Encoded value:         9,999,999 x 10^90
@@ -157,7 +157,7 @@ namespace System.Numerics
         // Section labels:        a | b          | c
         //
         // a. Sign bit.
-        // b. Biased Exponent, which is q + 101. 0110_0101 == 101 == 0 + 101, so this is encoding an q of 0.
+        // b. Biased Exponent, which is q + 101. 0110_0101 == 101 == 0 + 101, so this is encoding a q of 0.
         // c. Significand, set to 1.
         //
         // Encoded value:         1 x 10^0
@@ -211,7 +211,7 @@ namespace System.Numerics
                 combination |= 0b0001 & (c >> CombinationShift); // combination = (11, biased_exponent, x)
             }
 
-            _value = (uint)(((sign ? 1 : 0) << SignShift) + (combination << CombinationShift) + trailing_sig);
+            _value = ((sign ? 1U : 0U) << SignShift) + (combination << CombinationShift) + trailing_sig;
         }
 
         internal byte BiasedExponent
@@ -290,7 +290,7 @@ namespace System.Numerics
         // IEEE 754 specifies NaNs to be propagated
         internal static Decimal32 Negate(Decimal32 value)
         {
-            return IsNaN(value) ? value : new Decimal32((ushort)(value._value ^ SignMask));
+            return IsNaN(value) ? value : new Decimal32(value._value ^ SignMask);
         }
 
         private static uint StripSign(Decimal32 value)
