@@ -2362,7 +2362,16 @@ namespace System.Numerics
         //
 
         /// <inheritdoc cref="ISubtractionOperators{TSelf, TOther, TResult}.op_Subtraction(TSelf, TOther)" />
-        public static Decimal64 operator -(Decimal64 left, Decimal64 right) => throw new NotImplementedException();
+        public static Decimal64 operator -(Decimal64 left, Decimal64 right)
+        {
+            // check that is not NaN
+            if ((right._value & NaNMask) != NaNMask)
+            {
+                return left + (-right);
+            }
+
+            return left + right;
+        }
 
         //
         // ITrigonometricFunctions PLATINUM
