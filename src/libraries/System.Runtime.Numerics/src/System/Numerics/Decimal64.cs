@@ -24,7 +24,7 @@ namespace System.Numerics
           IMinMaxValue<Decimal64>
     {
 
-        private const NumberStyles DefaultParseStyle = NumberStyles.Float | NumberStyles.AllowThousands; // TODO is this correct?
+        private const NumberStyles DefaultParseStyle = NumberStyles.Float | NumberStyles.AllowThousands;
 
         //
         // Constants for manipulating the private bit-representation
@@ -59,10 +59,11 @@ namespace System.Numerics
         // Otherwise, the value is Finite
         internal const ulong ClassificationMask = 0x7C00_0000_0000_0000;
         internal const ulong NaNMask = 0x7C00_0000_0000_0000;
+        internal const ulong SNaNMask = 0x7E00_0000_0000_0000;
         internal const ulong InfinityMask = 0x7800_0000_0000_0000;
 
         // If the Classification bits are set to 11XXX, we encode the significand one way. Otherwise, we encode it a different way
-        internal const ulong FiniteNumberClassificationMask = 0x6000_0000_0000_0000;
+        internal const ulong SpecialEncodingMask = 0x6000_0000_0000_0000;
 
         // Finite significands are encoded in two different ways, depending on whether the most significant 4 bits of the significand are 0xxx or 100x. Test the MSB to classify.
         internal const ulong SignificandEncodingTypeMask = 1UL << (TrailingSignificandWidth + 3);
@@ -74,7 +75,7 @@ namespace System.Numerics
         // Hex:                   0x0000_0000_0000_0000
         // Binary:                0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
         // Split into sections:   0 | 000_0000_000 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
-        // Section labels:        a | b          | c
+        // Section labels:        a | b            | c
         //
         // a. Sign bit.
         // b. Biased Exponent, which is q + ExponentBias (398). 000_0000_000 == 0 == -398 + 398, so this is encoding a q of -398.
@@ -90,7 +91,7 @@ namespace System.Numerics
         // Hex:                   0x0000_0000_0000_0001
         // Binary:                0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
         // Split into sections:   0 | 000_0000_000 | 0_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001
-        // Section labels:        a | b          | c
+        // Section labels:        a | b            | c
         //
         // a. Sign bit.
         // b. Biased Exponent, which is q + ExponentBias (398). 000_0000_000 == 0 == -398 + 398, so this is encoding a q of -398.
@@ -104,7 +105,7 @@ namespace System.Numerics
         // Hex:                   0x7800_0000_0000_0000
         // Binary:                0111_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
         // Split into sections:   0 | 111_1000_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
-        // Section labels:        a | b            | c
+        // Section labels:        a | b                | c
         //
         // a. Sign bit.
         // b. Combination field G0 through G12. G0-G4 == 11110 encodes infinity.
@@ -115,26 +116,26 @@ namespace System.Numerics
         private const ulong NegativeInfinityBits = SignMask | PositiveInfinityBits;
 
         // QNanBits Bits
-        // Hex:                   0x7C00_0000_0000_0000
-        // Binary:                0111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
-        // Split into sections:   0 | 111_1100_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
-        // Section labels:        a | b            | c
+        // Hex:                   0xFC00_0000_0000_0000
+        // Binary:                1111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Split into sections:   1 | 111_1100_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Section labels:        a | b                | c
         //
         // a. Sign bit (ignored for NaN).
         // b. Combination field G0 through G12. G0-G4 == 11111 encodes NaN.
         // c. Trailing significand. Can be used to encode a payload, to distinguish different NaNs.
         // Note: Canonical NaN has G6-G12 as 0 and the encoding of the payload also canonical.
 
-        private const ulong QNanBits = 0x7C00_0000_0000_0000; // TODO I used a "positive" NaN here, should it be negative?
-        private const ulong SNanBits = 0x7E00_0000_0000_0000;
+        private const ulong QNanBits = SignMask | NaNMask;
+        private const ulong SNanBits = SignMask | SNaNMask;
 
 
         // MaxValueBits
         // Hex:                   0x77FB_86F2_6FC0_FFFF
         // Binary:                0111_0111_1111_1011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
         // Split into sections:   0 | 11 | 1_0111_1111_1 | 011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
-        //                        0 | 11 | 10_1111_1111 | [10_0]011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
-        // Section labels:        a | b  | c            | d
+        //                        0 | 11 | 10_1111_1111  | [10_0]011_1000_0110_1111_0010_0110_1111_1100_0000_1111_1111_1111_1111
+        // Section labels:        a | b  | c             | d
         //
         // a. Sign bit.
         // b. G0 and G1 of the combination field, "11" indicates this version of encoding.
@@ -250,7 +251,7 @@ namespace System.Numerics
             ushort combination = (ushort)((bits >> CombinationShift) & ShiftedCombinationMask);
 
             // Two types of encodings for finite numbers
-            if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
+            if ((bits & SpecialEncodingMask) == SpecialEncodingMask)
             {
                 // G0 and G1 are 11, exponent is stored in G2:G(CombinationWidth - 1)
                 return (ushort)(combination >> 1);
@@ -269,7 +270,7 @@ namespace System.Numerics
 
             // Two types of encodings for finite numbers
             ulong significand;
-            if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
+            if ((bits & SpecialEncodingMask) == SpecialEncodingMask)
             {
                 // G0 and G1 are 11, 4 MSBs of significand are 100x, where x is G(CombinationWidth)
                 significand = (ulong)(0b1000 | (combination & 0b1));
