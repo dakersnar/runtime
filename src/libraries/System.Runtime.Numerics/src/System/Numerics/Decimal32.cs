@@ -62,7 +62,7 @@ namespace System.Numerics
         internal const uint InfinityMask = 0x7800_0000;
 
         // If the Classification bits are set to 11XXX, we encode the significand one way. Otherwise, we encode it a different way
-        internal const uint FiniteNumberClassificationMask = 0x6000_0000;
+        internal const uint SpecialEncodingMask = 0x6000_0000;
 
         // Finite significands are encoded in two different ways, depending on whether the most significant 4 bits of the significand are 0xxx or 100x. Test the MSB to classify.
         internal const uint SignificandEncodingTypeMask = 1 << (TrailingSignificandWidth + 3);
@@ -253,7 +253,7 @@ namespace System.Numerics
             ushort combination = (ushort)((bits >> CombinationShift) & ShiftedCombinationMask);
 
             // Two types of encodings for finite numbers
-            if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
+            if ((bits & SpecialEncodingMask) == SpecialEncodingMask)
             {
                 // G0 and G1 are 11, exponent is stored in G2:G(CombinationWidth - 1)
                 return (byte)(combination >> 1);
@@ -272,7 +272,7 @@ namespace System.Numerics
 
             // Two types of encodings for finite numbers
             uint significand;
-            if ((bits & FiniteNumberClassificationMask) == FiniteNumberClassificationMask)
+            if ((bits & SpecialEncodingMask) == SpecialEncodingMask)
             {
                 // G0 and G1 are 11, 4 MSBs of significand are 100x, where x is G(CombinationWidth)
                 significand = (uint)(0b1000 | (combination & 0b1));
