@@ -24,7 +24,7 @@ namespace System.Numerics
           IMinMaxValue<Decimal64>
     {
 
-        private const NumberStyles DefaultParseStyle = NumberStyles.Float | NumberStyles.AllowThousands; // TODO is this correct?
+        private const NumberStyles DefaultParseStyle = NumberStyles.Float | NumberStyles.AllowThousands;
 
         //
         // Constants for manipulating the private bit-representation
@@ -131,9 +131,9 @@ namespace System.Numerics
         private const ulong NegativeInfinityBits = SignMask | PositiveInfinityBits;
 
         // QNanBits Bits
-        // Hex:                   0x7C00_0000_0000_0000
-        // Binary:                0111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
-        // Split into sections:   0 | 111_1100_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Hex:                   0xFC00_0000_0000_0000
+        // Binary:                1111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+        // Split into sections:   1 | 111_1100_0000_00 | 00_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
         // Section labels:        a | b                | c
         //
         // a. Sign bit (ignored for NaN).
