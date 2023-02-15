@@ -876,17 +876,16 @@ namespace System.Numerics
             ulong y = right._value;
 
 
-            UInt128 CA, CT, CT_new;
+            (ulong, ulong) CA, CT, CT_new; // (lower, upper)
             ulong sign_x, sign_y, coefficient_x, coefficient_y, C64_new;
             bool valid_x, valid_y;
             ulong res;
             ulong sign_a, sign_b, coefficient_a, coefficient_b, sign_s, sign_ab,
               rem_a;
-            ulong saved_ca, saved_cb, C0_64, C64, remainder_h, T1, carry, tmp;
+            ulong saved_ca, saved_cb, C0_64, C64, remainder_h, T1;
             double tempx; // PORT: this was originally a ulong/double union
             int exponent_x, exponent_y, exponent_a, exponent_b, diff_dec_expon;
             int bin_expon_ca, extra_digits, amount, scale_k, scale_ca;
-            uint rmode, status;
 
             // PORT: remove flag logic
 
@@ -1017,14 +1016,14 @@ namespace System.Numerics
                 // normalize a to a 16-digit coefficient
 
                 scale_ca = bid_estimate_decimal_digits[bin_expon_ca];
-                if (coefficient_a >= bid_power10_table_128[scale_ca].w[0])
+                if (coefficient_a >= bid_power10_table_128[scale_ca].Item1)
                 {
                     scale_ca++;
                 }
 
                 scale_k = 16 - scale_ca;
 
-                coefficient_a *= bid_power10_table_128[scale_k].w[0];
+                coefficient_a *= bid_power10_table_128[scale_k].Item1;
 
                 diff_dec_expon -= scale_k;
                 exponent_a -= scale_k;
@@ -1051,7 +1050,7 @@ namespace System.Numerics
                         exponent_a--;
                     }
 
-                    res = fast_get_BID64_check_OF(sign_a, exponent_a, coefficient_a, rnd_mode, pfpsf);
+                    res = fast_get_BID64_check_OF(sign_a, exponent_a, coefficient_a);
                     return new Decimal64(res);
                 }
             }
@@ -1061,7 +1060,7 @@ namespace System.Numerics
                 // coefficient_a*10^(exponent_a-exponent_b)<2^63
 
                 // multiply by 10^(exponent_a-exponent_b)
-                coefficient_a *= bid_power10_table_128[diff_dec_expon].w[0];
+                coefficient_a *= bid_power10_table_128[diff_dec_expon].Item1;
 
                 // sign mask
                 sign_b = (ulong)((long)sign_b) >> 63;
@@ -1079,7 +1078,7 @@ namespace System.Numerics
                 sign_s &= 0x8000000000000000UL;
 
                 // coefficient_a < 10^16 ?
-                if (coefficient_a < bid_power10_table_128[Precision].w[0])
+                if (coefficient_a < bid_power10_table_128[Precision].Item1)
                 {
                     // PORT: remove handling of other rounding modes
 
@@ -1090,24 +1089,29 @@ namespace System.Numerics
 
                 // already know coefficient_a<10^19
                 // coefficient_a < 10^17 ?
-                if (coefficient_a < bid_power10_table_128[17].w[0])
+                if (coefficient_a < bid_power10_table_128[17].Item1)
+                {
                     extra_digits = 1;
-                else if (coefficient_a < bid_power10_table_128[18].w[0])
+                }
+                else if (coefficient_a < bid_power10_table_128[18].Item1)
+                {
                     extra_digits = 2;
+                }
                 else
+                {
                     extra_digits = 3;
+                }
 
                 // PORT: remove handling of other rounding modes
 
-                rmode = 0;
-                coefficient_a += bid_round_const_table[rmode][extra_digits];
+                coefficient_a += bid_round_const_table[extra_digits];
 
                 // get P*(2^M[extra_digits])/10^extra_digits
-                __mul_64x64_to_128(CT, coefficient_a, bid_reciprocals10_64[extra_digits]);
+                CT.Item2 = Math.BigMul(coefficient_a, bid_reciprocals10_64[extra_digits], out CT.Item1);
 
                 // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
                 amount = bid_short_recip_scale[extra_digits];
-                C64 = CT.w[1] >> amount;
+                C64 = CT.Item2 >> amount;
 
             }
             else
@@ -1117,19 +1121,17 @@ namespace System.Numerics
 
                 // PORT: remove handling of other rounding modes
 
-                rmode = 0;
-
                 // check whether we can take faster path
                 scale_ca = bid_estimate_decimal_digits[bin_expon_ca];
 
                 sign_ab = sign_a ^ sign_b;
-                sign_ab = ((long)sign_ab) >> 63;
+                sign_ab = (ulong)((long)sign_ab >> 63); // TODO the original line was sign_ab = ((long)sign_ab) >> 63; Do we cast before or after the shift? Does it matter?
 
                 // T1 = 10^(16-diff_dec_expon)
-                T1 = bid_power10_table_128[16 - diff_dec_expon].w[0];
+                T1 = bid_power10_table_128[16 - diff_dec_expon].Item1;
 
                 // get number of digits in coefficient_a
-                if (coefficient_a >= bid_power10_table_128[scale_ca].w[0])
+                if (coefficient_a >= bid_power10_table_128[scale_ca].Item1)
                 {
                     scale_ca++;
                 }
@@ -1138,8 +1140,7 @@ namespace System.Numerics
 
                 // addition
                 saved_ca = coefficient_a - T1;
-                coefficient_a =
-                  (long)saved_ca * (long)bid_power10_table_128[scale_k].w[0];
+                coefficient_a = (ulong)((long)saved_ca * (long)bid_power10_table_128[scale_k].Item1); // TODO do we even need these casts?
                 extra_digits = diff_dec_expon - scale_k;
 
                 // apply sign
@@ -1147,75 +1148,72 @@ namespace System.Numerics
                 // add 10^16 and rounding constant
                 coefficient_b =
                   saved_cb + 10000000000000000UL +
-                  bid_round_const_table[rmode][extra_digits];
+                  bid_round_const_table[extra_digits];
 
                 // get P*(2^M[extra_digits])/10^extra_digits
-                __mul_64x64_to_128(CT, coefficient_b, bid_reciprocals10_64[extra_digits]);
+                CT.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT.Item1);
 
                 // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
                 amount = bid_short_recip_scale[extra_digits];
-                C0_64 = CT.w[1] >> amount;
+                C0_64 = CT.Item2 >> amount;
 
                 // result coefficient
                 C64 = C0_64 + coefficient_a;
                 // filter out difficult (corner) cases
                 // this test ensures the number of digits in coefficient_a does not change
                 // after adding (the appropriately scaled and rounded) coefficient_b
-                if ((ulong)(C64 - 1000000000000000UL - 1) >
-                9000000000000000UL - 2) {
-                    if (C64 >= 10000000000000000UL) {
+                if ((C64 - 1000000000000000UL - 1) > (9000000000000000UL - 2))
+                {
+                    if (C64 >= 10000000000000000UL)
+                    {
                         // result has more than 16 digits
                         if (scale_k == 0)
                         {
                             // must divide coeff_a by 10
                             saved_ca += T1;
-                            __mul_64x64_to_128(CA, saved_ca, 0x3333333333333334UL);
+                            CA.Item2 = Math.BigMul(saved_ca, 0x3333333333333334UL, out CA.Item1);
                             //reciprocals10_64[1]);
-                            coefficient_a = CA.w[1] >> 1;
+                            coefficient_a = CA.Item2 >> 1;
                             rem_a =
                               saved_ca - (coefficient_a << 3) - (coefficient_a << 1);
-                            coefficient_a = coefficient_a - T1;
+                            coefficient_a -= T1;
 
-                            saved_cb += rem_a * bid_power10_table_128[diff_dec_expon].w[0];
+                            saved_cb += rem_a * bid_power10_table_128[diff_dec_expon].Item1;
                         }
                         else
-                            coefficient_a =
-                              (long)(saved_ca - T1 -
-                                    (T1 << 3)) * (long)bid_power10_table_128[scale_k -
-                                                        1].w[0];
+                        {
+                            coefficient_a = (ulong)((long)(saved_ca - T1 - (T1 << 3)) * (long)bid_power10_table_128[scale_k - 1].Item1); // TODO do we need these casts?
+                        }
 
                         extra_digits++;
                         coefficient_b =
                           saved_cb + 100000000000000000UL +
-                          bid_round_const_table[rmode][extra_digits];
+                          bid_round_const_table[extra_digits];
 
                         // get P*(2^M[extra_digits])/10^extra_digits
-                        __mul_64x64_to_128(CT, coefficient_b, bid_reciprocals10_64[extra_digits]);
+                        CT.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT.Item1);
 
                         // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
                         amount = bid_short_recip_scale[extra_digits];
-                        C0_64 = CT.w[1] >> amount;
+                        C0_64 = CT.Item2 >> amount;
 
                         // result coefficient
                         C64 = C0_64 + coefficient_a;
-                    } else if (C64 <= 1000000000000000UL) {
+                    }
+                    else if (C64 <= 1000000000000000UL)
+                    {
                         // less than 16 digits in result
-                        coefficient_a =
-                          (long)saved_ca * (long)bid_power10_table_128[scale_k +
-                                                1].w[0];
+                        coefficient_a = (ulong)((long)saved_ca * (long)bid_power10_table_128[scale_k + 1].Item1);
                         //extra_digits --;
                         exponent_b--;
-                        coefficient_b =
-                          (saved_cb << 3) + (saved_cb << 1) + 100000000000000000UL +
-                          bid_round_const_table[rmode][extra_digits];
+                        coefficient_b = (saved_cb << 3) + (saved_cb << 1) + 100000000000000000UL + bid_round_const_table[extra_digits];
 
                         // get P*(2^M[extra_digits])/10^extra_digits
-                        __mul_64x64_to_128(CT_new, coefficient_b,
-                                    bid_reciprocals10_64[extra_digits]);
+                        CT_new.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT_new.Item1);
 
                         // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
                         amount = bid_short_recip_scale[extra_digits];
-                        C0_64 = CT_new.w[1] >> amount;
+                        C0_64 = CT_new.Item2 >> amount;
 
                         // result coefficient
                         C64_new = C0_64 + coefficient_a;
@@ -1229,9 +1227,7 @@ namespace System.Numerics
                             exponent_b++;
                         }
                     }
-
                 }
-
             }
 
             // PORT: remove handing for other rounding modes
@@ -1243,10 +1239,10 @@ namespace System.Numerics
                 //      (initial_P + 0.5*10^extra_digits)/10^extra_digits is exactly zero
 
                 // get remainder
-                remainder_h = CT.w[1] << (64 - amount);
+                remainder_h = CT.Item2 << (64 - amount);
 
                 // test whether fractional part is 0
-                if (!remainder_h && (CT.w[0] < bid_reciprocals10_64[extra_digits]))
+                if ((remainder_h == 0) && (CT.Item1 < bid_reciprocals10_64[extra_digits]))
                 {
                     C64--;
                 }
@@ -1254,7 +1250,7 @@ namespace System.Numerics
 
             // Port: remove flag setting
 
-            res = fast_get_BID64_check_OF(sign_s, exponent_b + extra_digits, C64, rnd_mode, pfpsf);
+            res = fast_get_BID64_check_OF(sign_s, exponent_b + extra_digits, C64);
             return new Decimal64(res);
         }
 
