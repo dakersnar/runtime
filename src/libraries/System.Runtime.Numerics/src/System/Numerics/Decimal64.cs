@@ -170,6 +170,14 @@ namespace System.Numerics
 
         internal readonly ulong _value;
 
+        /// <summary>Initializes a new instance of the <see cref="Decimal64" /> struct, representing the value <paramref name="significand"/> * 10 ^ <paramref name="exponent"/></summary>
+        /// <param name="significand">The signed integral significand.</param>
+        /// <param name="exponent">The signed base-10 exponent.</param>
+        public Decimal64(long significand, short exponent)
+        {
+            throw new NotImplementedException();
+        }
+
         //
         // Internal Constructors and Decoders
         //
@@ -858,11 +866,11 @@ namespace System.Numerics
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc cref="IDecimalFloatingPointIeee754{TSelf}.Quantum(TSelf)" />
-        public static Decimal64 Quantum(Decimal64 x) => throw new NotImplementedException();
+        /// <inheritdoc cref="IDecimalFloatingPointIeee754{TSelf}.GetQuantum(TSelf)" />
+        public static Decimal64 GetQuantum(Decimal64 x) => throw new NotImplementedException();
 
-        /// <inheritdoc cref="IDecimalFloatingPointIeee754{TSelf}.SameQuantum(TSelf, TSelf)" />
-        public static bool SameQuantum(Decimal64 x, Decimal64 y)
+        /// <inheritdoc cref="IDecimalFloatingPointIeee754{TSelf}.HaveSameQuantum(TSelf, TSelf)" />
+        public static bool HaveSameQuantum(Decimal64 x, Decimal64 y)
         {
             return x.Exponent == y.Exponent
                 || (IsInfinity(x) && IsInfinity(y))

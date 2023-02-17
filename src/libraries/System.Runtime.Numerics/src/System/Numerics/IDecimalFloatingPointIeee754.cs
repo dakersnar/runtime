@@ -11,16 +11,9 @@ namespace System.Numerics
     {
         // 5.3.2
         static abstract TSelf Quantize(TSelf x, TSelf y);
-        static abstract TSelf Quantum(TSelf x);
-
-        // 5.5.2
-        // Maybe expose this on this interface
-        /*        TOther EncodeDecimal(TSelf x);
-                TSelf DecodeDecimal(TOther x);
-                TOther EncodeBinary(TSelf x);
-                TSelf DecodeBinary(TOther x);*/
+        static abstract TSelf GetQuantum(TSelf x);
 
         // 5.7.3
-        static abstract bool SameQuantum(TSelf x, TSelf y);
+        static abstract bool HaveSameQuantum(TSelf x, TSelf y);
     }
 }

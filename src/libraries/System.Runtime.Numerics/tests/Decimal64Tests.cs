@@ -93,17 +93,17 @@ namespace System.Numerics.Tests
             yield return new object[] { "-Infinity", NumberStyles.Any, invariantFormat, Decimal64.NegativeInfinity };
         }
 
-        private static void AssertEqualAndSameQuantum(Decimal64 expected, Decimal64 result)
+        private static void AssertEqualAndHaveSameQuantum(Decimal64 expected, Decimal64 result)
         {
             Assert.Equal(expected, result);
-            Assert.True(Decimal64.SameQuantum(expected, result));
+            Assert.True(Decimal64.HaveSameQuantum(expected, result));
         }
 
-        private static void AssertEqualAndSameQuantumOrBothNan(Decimal64 expected, Decimal64 result)
+        private static void AssertEqualAndHaveSameQuantumOrBothNan(Decimal64 expected, Decimal64 result)
         {
             if (!(Decimal64.IsNaN(expected) && Decimal64.IsNaN(result)))
             {
-                AssertEqualAndSameQuantum(expected, result);
+                AssertEqualAndHaveSameQuantum(expected, result);
             }
         }
 
@@ -119,32 +119,32 @@ namespace System.Numerics.Tests
                 if (isDefaultProvider)
                 {
                     Assert.True(Decimal64.TryParse(value, out result));
-                    AssertEqualAndSameQuantum(expected, result);
+                    AssertEqualAndHaveSameQuantum(expected, result);
 
-                    AssertEqualAndSameQuantum(expected, Decimal64.Parse(value));
+                    AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value));
                 }
 
                 Assert.True(Decimal64.TryParse(value, provider: provider, out result));
-                AssertEqualAndSameQuantum(expected, result);
+                AssertEqualAndHaveSameQuantum(expected, result);
 
-                AssertEqualAndSameQuantum(expected, Decimal64.Parse(value, provider: provider));
+                AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value, provider: provider));
             }
 
             // Use Parse(string, NumberStyles, IFormatProvider)
             Assert.True(Decimal64.TryParse(value, style, provider, out result));
 
-            AssertEqualAndSameQuantumOrBothNan(expected, result);
-            AssertEqualAndSameQuantumOrBothNan(expected, Decimal64.Parse(value, style, provider));
+            AssertEqualAndHaveSameQuantumOrBothNan(expected, result);
+            AssertEqualAndHaveSameQuantumOrBothNan(expected, Decimal64.Parse(value, style, provider));
 
             if (isDefaultProvider)
             {
                 // Use Parse(string, NumberStyles) or Parse(string, NumberStyles, IFormatProvider)
                 Assert.True(Decimal64.TryParse(value, style, NumberFormatInfo.CurrentInfo, out result));
-                AssertEqualAndSameQuantum(expected, result);
+                AssertEqualAndHaveSameQuantum(expected, result);
 
-                AssertEqualAndSameQuantum(expected, Decimal64.Parse(value));
-                AssertEqualAndSameQuantum(expected, Decimal64.Parse(value, style));
-                AssertEqualAndSameQuantum(expected, Decimal64.Parse(value, style, NumberFormatInfo.CurrentInfo));
+                AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value));
+                AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value, style));
+                AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value, style, NumberFormatInfo.CurrentInfo));
             }
         }
 
@@ -244,21 +244,21 @@ namespace System.Numerics.Tests
                 if (isDefaultProvider)
                 {
                     Assert.True(Decimal64.TryParse(value.AsSpan(offset, count), out result));
-                    AssertEqualAndSameQuantum(expected, result);
+                    AssertEqualAndHaveSameQuantum(expected, result);
 
-                    AssertEqualAndSameQuantum(expected, Decimal64.Parse(value.AsSpan(offset, count)));
+                    AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value.AsSpan(offset, count)));
                 }
 
                 Assert.True(Decimal64.TryParse(value.AsSpan(offset, count), provider: provider, out result));
-                AssertEqualAndSameQuantum(expected, result);
+                AssertEqualAndHaveSameQuantum(expected, result);
 
-                AssertEqualAndSameQuantum(expected, Decimal64.Parse(value.AsSpan(offset, count), provider: provider));
+                AssertEqualAndHaveSameQuantum(expected, Decimal64.Parse(value.AsSpan(offset, count), provider: provider));
             }
 
-            AssertEqualAndSameQuantumOrBothNan(expected, Decimal64.Parse(value.AsSpan(offset, count), style, provider));
+            AssertEqualAndHaveSameQuantumOrBothNan(expected, Decimal64.Parse(value.AsSpan(offset, count), style, provider));
 
             Assert.True(Decimal64.TryParse(value.AsSpan(offset, count), style, provider, out result));
-            AssertEqualAndSameQuantumOrBothNan(expected, result);
+            AssertEqualAndHaveSameQuantumOrBothNan(expected, result);
         }
 
         [Theory]
