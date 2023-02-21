@@ -173,7 +173,7 @@ namespace System.Numerics
         /// <summary>Initializes a new instance of the <see cref="Decimal64" /> struct, representing the value <paramref name="significand"/> * 10 ^ <paramref name="exponent"/></summary>
         /// <param name="significand">The signed integral significand.</param>
         /// <param name="exponent">The signed base-10 exponent.</param>
-        public Decimal64(long significand, short exponent)
+        public Decimal64(long significand, int exponent)
         {
             throw new NotImplementedException();
         }
