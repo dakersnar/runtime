@@ -571,7 +571,7 @@ namespace System.Numerics.Tests
         [Theory]
         public static void ExplicitConversion_FromSingle(float f, Decimal64 expected) // Check the underlying bits for verifying NaNs
         {
-            Decimal64 result = (Decimal64)h;
+            Decimal64 result = (Decimal64)f;
             AssertBitwiseEqual(expected, result);
         }
 
