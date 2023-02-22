@@ -13,7 +13,7 @@ namespace System.Numerics
     /// An IEEE 754 compliant decimal64 type.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Decimal64
+    public readonly partial struct Decimal64
         : IComparable<Decimal64>,
           IComparable,
           ISpanFormattable,
@@ -30,7 +30,7 @@ namespace System.Numerics
         // Constants for manipulating the private bit-representation
         //
 
-        internal const ulong SignMask = 0x8000_0000_0000_0000;
+        internal const ulong SignMask = 0x8000_0000_0000_0000; // TODO should these constants all be marked as UL?
         internal const int SignShift = 63;
 
         internal const ulong CombinationMask = 0x7FFC_0000_0000_0000;
@@ -38,8 +38,14 @@ namespace System.Numerics
         internal const int CombinationWidth = 13;
         internal const ushort ShiftedCombinationMask = (ushort)(CombinationMask >> CombinationShift);
 
+        internal const int ExponentShiftSmall = 53;
+        internal const int ExponentShiftLarge = 51;
+
         internal const ulong TrailingSignificandMask = 0x0003_FFFF_FFFF_FFFF;
         internal const int TrailingSignificandWidth = 50;
+        internal const ulong SmallSignificandMask = 0x0007_FFFF_FFFF_FFFF;
+        internal const ulong LargeSignificandMask = 0x0001_FFFF_FFFF_FFFF;
+        internal const ulong LargeSignificandHighBit = 0x0020_0000_0000_0000;
 
         internal const short EMax = 384;
         internal const short EMin = -383;
@@ -47,8 +53,11 @@ namespace System.Numerics
         internal const byte Precision = 16;
         internal const ushort ExponentBias = 398;
 
-        internal const short MaxQExponent = EMax - Precision + 1;
-        internal const short MinQExponent = EMin - Precision + 1;
+        internal const short MaxQExponent = EMax - Precision + 1; // 369
+        internal const short MinQExponent = EMin - Precision + 1; // -398
+
+        internal const short MaxBiasedExponent = MaxQExponent + ExponentBias; // 767
+        internal const short MinBiasedExponent = 0;
 
         internal const long MaxSignificand = 9_999_999_999_999_999; // 16 digits
         internal const long MinSignificand = -9_999_999_999_999_999; // 16 digits
@@ -62,11 +71,17 @@ namespace System.Numerics
         internal const ulong SNaNMask = 0x7E00_0000_0000_0000;
         internal const ulong InfinityMask = 0x7800_0000_0000_0000;
 
+        // Turn a signaling NaN into a quiet NaN with this mask
+        internal const ulong QuietMask = 0xFDFF_FFFF_FFFF_FFFF;
+
         // If the Classification bits are set to 11XXX, we encode the significand one way. Otherwise, we encode it a different way
         internal const ulong SpecialEncodingMask = 0x6000_0000_0000_0000;
 
         // Finite significands are encoded in two different ways, depending on whether the most significant 4 bits of the significand are 0xxx or 100x. Test the MSB to classify.
         internal const ulong SignificandEncodingTypeMask = 1UL << (TrailingSignificandWidth + 3);
+
+        // Other constants from the Intel port
+        internal const ulong MaskBinaryExponent = 0x7FF0_0000_0000_0000;
 
         // Constants representing the private bit-representation for various default values.
         // See either IEEE-754 2019 section 3.5 or https://en.wikipedia.org/wiki/Decimal64_floating-point_format for a breakdown of the encoding.
@@ -830,7 +845,422 @@ namespace System.Numerics
         //
 
         /// <inheritdoc cref="IAdditionOperators{TSelf, TOther, TResult}.op_Addition(TSelf, TOther)" />
-        public static Decimal64 operator +(Decimal64 left, Decimal64 right) => throw new NotImplementedException();
+        public static Decimal64 operator +(Decimal64 left, Decimal64 right)
+        {
+            // TODO how to properly cite the intel code?
+            /*****************************************************************************
+             *    BID64 add
+             *****************************************************************************
+             *
+             *  Algorithm description:
+             *
+             *   if(exponent_a < exponent_b)
+             *       switch a, b
+             *   diff_expon = exponent_a - exponent_b
+             *   if(diff_expon > 16)
+             *      return normalize(a)
+             *   if(coefficient_a*10^diff_expon guaranteed below 2^62)
+             *       S = sign_a*coefficient_a*10^diff_expon + sign_b*coefficient_b
+             *       if(|S|<10^16)
+             *           return get_BID64(sign(S),exponent_b,|S|)
+             *       else
+             *          determine number of extra digits in S (1, 2, or 3)
+             *            return rounded result
+             *   else // large exponent difference
+             *       if(number_digits(coefficient_a*10^diff_expon) +/- 10^16)
+             *          guaranteed the same as
+             *          number_digits(coefficient_a*10^diff_expon) )
+             *           S = normalize(coefficient_a + (sign_a^sign_b)*10^(16-diff_expon))
+             *           corr = 10^16 + (sign_a^sign_b)*coefficient_b
+             *           corr*10^exponent_b is rounded so it aligns with S*10^exponent_S
+             *           return get_BID64(sign_a,exponent(S),S+rounded(corr))
+             *       else
+             *         add sign_a*coefficient_a*10^diff_expon, sign_b*coefficient_b
+             *             in 128-bit integer arithmetic, then round to 16 decimal digits
+             *
+             *
+             ****************************************************************************/
+            ulong x = left._value;
+            ulong y = right._value;
+
+
+            (ulong, ulong) CA, CT, CT_new; // (lower, upper)
+            ulong sign_x, sign_y, coefficient_x, coefficient_y, C64_new;
+            bool valid_x, valid_y;
+            ulong res;
+            ulong sign_a, sign_b, coefficient_a, coefficient_b, sign_s, sign_ab,
+              rem_a;
+            ulong saved_ca, saved_cb, C0_64, C64, remainder_h, T1;
+            double tempx; // PORT: this was originally a ulong/double union
+            int exponent_x, exponent_y, exponent_a, exponent_b, diff_dec_expon;
+            int bin_expon_ca, extra_digits, amount, scale_k, scale_ca;
+
+            // PORT: remove flag logic
+
+            valid_x = unpack_BID64(out sign_x, out exponent_x, out coefficient_x, x);
+            valid_y = unpack_BID64(out sign_y, out exponent_y, out coefficient_y, y);
+
+            // unpack arguments, check for NaN or Infinity
+            if (!valid_x)
+            {
+                // x is Inf. or NaN
+
+                // test if x is NaN
+                if ((x & NaNMask) == NaNMask)
+                {
+                    // PORT: Remove flag setting
+
+                    res = coefficient_x & QuietMask;
+                    return new Decimal64(res);
+                }
+                // x is Infinity?
+                if ((x & InfinityMask) == InfinityMask)
+                {
+                    // check if y is Inf
+                    if (((y & NaNMask) == InfinityMask))
+                    {
+                        if (sign_x == (y & 0x8000000000000000UL)) {
+                            res = coefficient_x;
+                            return new Decimal64(res);
+                        }
+                        // return NaN
+                        {
+                            // PORT: Remove flag setting
+
+                            return NaN; // PORT: original port returns positive QNaN, we return negative QNaN
+                        }
+                    }
+                    // check if y is NaN
+                    if (((y & NaNMask) == NaNMask))
+                    {
+                        res = coefficient_y & QuietMask;
+
+                        // PORT: Remove flag setting
+
+                        return new Decimal64(res);
+                    }
+                    // otherwise return +/-Inf
+                    {
+                        res = coefficient_x;
+                        return new Decimal64(res);
+                    }
+                }
+                // x is 0
+                {
+                    if (((y & InfinityMask) != InfinityMask) && (coefficient_y != 0))
+                    {
+                        if (exponent_y <= exponent_x)
+                        {
+                            res = y;
+                            return new Decimal64(res);
+                        }
+                    }
+                }
+
+            }
+            if (!valid_y)
+            {
+                // y is Inf. or NaN?
+                if (((y & InfinityMask) == InfinityMask))
+                {
+                    // PORT: Remove flag setting
+
+                    res = coefficient_y & QuietMask;
+                    return new Decimal64(res);
+                }
+                // y is 0
+                if (coefficient_x == 0)
+                {   // x==0
+                    if (exponent_x <= exponent_y)
+                        res = ((ulong)exponent_x) << 53;
+                    else
+                        res = ((ulong)exponent_y) << 53;
+                    if (sign_x == sign_y)
+                        res |= sign_x;
+
+                    // PORT: Remove handling of BID_ROUNDING_DOWN
+
+                    return new Decimal64(res);
+                }
+                else if (exponent_y >= exponent_x)
+                {
+                    res = x;
+                    return new Decimal64(res);
+                }
+            }
+            // sort arguments by exponent
+            if (exponent_x < exponent_y)
+            {
+                sign_a = sign_y;
+                exponent_a = exponent_y;
+                coefficient_a = coefficient_y;
+                sign_b = sign_x;
+                exponent_b = exponent_x;
+                coefficient_b = coefficient_x;
+            }
+            else
+            {
+                sign_a = sign_x;
+                exponent_a = exponent_x;
+                coefficient_a = coefficient_x;
+                sign_b = sign_y;
+                exponent_b = exponent_y;
+                coefficient_b = coefficient_y;
+            }
+
+            // exponent difference
+            diff_dec_expon = exponent_a - exponent_b;
+
+            /* get binary coefficients of x and y */
+
+            //--- get number of bits in the coefficients of x and y ---
+
+            // version 2 (original)
+            tempx = (double)coefficient_a; // TODO: double check this is actually converting to double and not just reinterpreting the bits in the original C code
+            bin_expon_ca = (int)((BitConverter.DoubleToUInt64Bits(tempx) & MaskBinaryExponent) >> 52) - 0x3ff;
+
+            if (diff_dec_expon > Precision)
+            {
+                // normalize a to a 16-digit coefficient
+
+                scale_ca = bid_estimate_decimal_digits[bin_expon_ca];
+                if (coefficient_a >= bid_power10_table_128[scale_ca].Item1)
+                {
+                    scale_ca++;
+                }
+
+                scale_k = 16 - scale_ca;
+
+                coefficient_a *= bid_power10_table_128[scale_k].Item1;
+
+                diff_dec_expon -= scale_k;
+                exponent_a -= scale_k;
+
+                /* get binary coefficients of x and y */
+
+                //--- get number of bits in the coefficients of x and y ---
+                tempx = (double)coefficient_a;
+                bin_expon_ca = (int)((BitConverter.DoubleToUInt64Bits(tempx) & MaskBinaryExponent) >> 52) - 0x3ff;
+
+                if (diff_dec_expon > Precision)
+                {
+                    // PORT: Remove flag setting
+
+                    // PORT: remove handling of other rounding modes
+
+                    // check special case here
+                    if ((coefficient_a == 1000000000000000UL)
+                        && (diff_dec_expon == Precision + 1)
+                        && ((sign_a ^ sign_b) != 0)
+                        && (coefficient_b > 5000000000000000UL))
+                {
+                        coefficient_a = 9999999999999999UL;
+                        exponent_a--;
+                    }
+
+                    res = fast_get_BID64_check_OF(sign_a, exponent_a, coefficient_a);
+                    return new Decimal64(res);
+                }
+            }
+            // test whether coefficient_a*10^(exponent_a-exponent_b)  may exceed 2^62
+            if (bin_expon_ca + bid_estimate_bin_expon[diff_dec_expon] < 60)
+            {
+                // coefficient_a*10^(exponent_a-exponent_b)<2^63
+
+                // multiply by 10^(exponent_a-exponent_b)
+                coefficient_a *= bid_power10_table_128[diff_dec_expon].Item1;
+
+                // sign mask
+                sign_b = (ulong)((long)sign_b) >> 63;
+                // apply sign to coeff. of b
+                coefficient_b = (coefficient_b + sign_b) ^ sign_b;
+
+                // apply sign to coefficient a
+                sign_a = (ulong)((long)sign_a) >> 63;
+                coefficient_a = (coefficient_a + sign_a) ^ sign_a;
+
+                coefficient_a += coefficient_b;
+                // get sign
+                sign_s = (ulong)((long)coefficient_a) >> 63;
+                coefficient_a = (coefficient_a + sign_s) ^ sign_s;
+                sign_s &= 0x8000000000000000UL;
+
+                // coefficient_a < 10^16 ?
+                if (coefficient_a < bid_power10_table_128[Precision].Item1)
+                {
+                    // PORT: remove handling of other rounding modes
+
+                    res = very_fast_get_BID64(sign_s, exponent_b, coefficient_a);
+                    return new Decimal64(res);
+                }
+                // otherwise rounding is necessary
+
+                // already know coefficient_a<10^19
+                // coefficient_a < 10^17 ?
+                if (coefficient_a < bid_power10_table_128[17].Item1)
+                {
+                    extra_digits = 1;
+                }
+                else if (coefficient_a < bid_power10_table_128[18].Item1)
+                {
+                    extra_digits = 2;
+                }
+                else
+                {
+                    extra_digits = 3;
+                }
+
+                // PORT: remove handling of other rounding modes
+
+                coefficient_a += bid_round_const_table[extra_digits];
+
+                // get P*(2^M[extra_digits])/10^extra_digits
+                CT.Item2 = Math.BigMul(coefficient_a, bid_reciprocals10_64[extra_digits], out CT.Item1);
+
+                // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
+                amount = bid_short_recip_scale[extra_digits];
+                C64 = CT.Item2 >> amount;
+
+            }
+            else
+            {
+                // coefficient_a*10^(exponent_a-exponent_b) is large
+                sign_s = sign_a;
+
+                // PORT: remove handling of other rounding modes
+
+                // check whether we can take faster path
+                scale_ca = bid_estimate_decimal_digits[bin_expon_ca];
+
+                sign_ab = sign_a ^ sign_b;
+                sign_ab = (ulong)((long)sign_ab >> 63); // TODO the original line was sign_ab = ((long)sign_ab) >> 63; Do we cast before or after the shift? Does it matter?
+
+                // T1 = 10^(16-diff_dec_expon)
+                T1 = bid_power10_table_128[16 - diff_dec_expon].Item1;
+
+                // get number of digits in coefficient_a
+                if (coefficient_a >= bid_power10_table_128[scale_ca].Item1)
+                {
+                    scale_ca++;
+                }
+
+                scale_k = 16 - scale_ca;
+
+                // addition
+                saved_ca = coefficient_a - T1;
+                coefficient_a = (ulong)((long)saved_ca * (long)bid_power10_table_128[scale_k].Item1); // TODO do we even need these casts?
+                extra_digits = diff_dec_expon - scale_k;
+
+                // apply sign
+                saved_cb = (coefficient_b + sign_ab) ^ sign_ab;
+                // add 10^16 and rounding constant
+                coefficient_b =
+                  saved_cb + 10000000000000000UL +
+                  bid_round_const_table[extra_digits];
+
+                // get P*(2^M[extra_digits])/10^extra_digits
+                CT.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT.Item1);
+
+                // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
+                amount = bid_short_recip_scale[extra_digits];
+                C0_64 = CT.Item2 >> amount;
+
+                // result coefficient
+                C64 = C0_64 + coefficient_a;
+                // filter out difficult (corner) cases
+                // this test ensures the number of digits in coefficient_a does not change
+                // after adding (the appropriately scaled and rounded) coefficient_b
+                if ((C64 - 1000000000000000UL - 1) > (9000000000000000UL - 2))
+                {
+                    if (C64 >= 10000000000000000UL)
+                    {
+                        // result has more than 16 digits
+                        if (scale_k == 0)
+                        {
+                            // must divide coeff_a by 10
+                            saved_ca += T1;
+                            CA.Item2 = Math.BigMul(saved_ca, 0x3333333333333334UL, out CA.Item1);
+                            //reciprocals10_64[1]);
+                            coefficient_a = CA.Item2 >> 1;
+                            rem_a =
+                              saved_ca - (coefficient_a << 3) - (coefficient_a << 1);
+                            coefficient_a -= T1;
+
+                            saved_cb += rem_a * bid_power10_table_128[diff_dec_expon].Item1;
+                        }
+                        else
+                        {
+                            coefficient_a = (ulong)((long)(saved_ca - T1 - (T1 << 3)) * (long)bid_power10_table_128[scale_k - 1].Item1); // TODO do we need these casts?
+                        }
+
+                        extra_digits++;
+                        coefficient_b =
+                          saved_cb + 100000000000000000UL +
+                          bid_round_const_table[extra_digits];
+
+                        // get P*(2^M[extra_digits])/10^extra_digits
+                        CT.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT.Item1);
+
+                        // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
+                        amount = bid_short_recip_scale[extra_digits];
+                        C0_64 = CT.Item2 >> amount;
+
+                        // result coefficient
+                        C64 = C0_64 + coefficient_a;
+                    }
+                    else if (C64 <= 1000000000000000UL)
+                    {
+                        // less than 16 digits in result
+                        coefficient_a = (ulong)((long)saved_ca * (long)bid_power10_table_128[scale_k + 1].Item1);
+                        //extra_digits --;
+                        exponent_b--;
+                        coefficient_b = (saved_cb << 3) + (saved_cb << 1) + 100000000000000000UL + bid_round_const_table[extra_digits];
+
+                        // get P*(2^M[extra_digits])/10^extra_digits
+                        CT_new.Item2 = Math.BigMul(coefficient_b, bid_reciprocals10_64[extra_digits], out CT_new.Item1);
+
+                        // now get P/10^extra_digits: shift C64 right by M[extra_digits]-128
+                        amount = bid_short_recip_scale[extra_digits];
+                        C0_64 = CT_new.Item2 >> amount;
+
+                        // result coefficient
+                        C64_new = C0_64 + coefficient_a;
+                        if (C64_new < 10000000000000000UL)
+                        {
+                            C64 = C64_new;
+                            // PORT: remove flag setting
+                        }
+                        else
+                        {
+                            exponent_b++;
+                        }
+                    }
+                }
+            }
+
+            // PORT: remove handing for other rounding modes
+            if ((C64 & 1) != 0)
+            {
+                // check whether fractional part of initial_P/10^extra_digits is
+                // exactly .5
+                // this is the same as fractional part of
+                //      (initial_P + 0.5*10^extra_digits)/10^extra_digits is exactly zero
+
+                // get remainder
+                remainder_h = CT.Item2 << (64 - amount);
+
+                // test whether fractional part is 0
+                if ((remainder_h == 0) && (CT.Item1 < bid_reciprocals10_64[extra_digits]))
+                {
+                    C64--;
+                }
+            }
+
+            // Port: remove flag setting
+
+            res = fast_get_BID64_check_OF(sign_s, exponent_b + extra_digits, C64);
+            return new Decimal64(res);
+        }
 
         //
         // IAdditiveIdentity
@@ -1940,7 +2370,16 @@ namespace System.Numerics
         //
 
         /// <inheritdoc cref="ISubtractionOperators{TSelf, TOther, TResult}.op_Subtraction(TSelf, TOther)" />
-        public static Decimal64 operator -(Decimal64 left, Decimal64 right) => throw new NotImplementedException();
+        public static Decimal64 operator -(Decimal64 left, Decimal64 right)
+        {
+            // check that is not NaN
+            if ((right._value & NaNMask) != NaNMask)
+            {
+                return left + (-right);
+            }
+
+            return left + right;
+        }
 
         //
         // ITrigonometricFunctions PLATINUM
@@ -2001,5 +2440,155 @@ namespace System.Numerics
 
         /// <inheritdoc cref="IUnaryPlusOperators{TSelf, TResult}.op_UnaryPlus(TSelf)" />
         public static Decimal64 operator +(Decimal64 value) => value;
+
+        // Private helpers from Intel library
+        // from bid_internal.h
+        private static void __add_carry_out(out ulong S, out ulong CY, ulong X, ulong Y)
+        {
+            ulong X1 = X;
+            S = X + Y;
+            CY = (S < X1) ? 1UL : 0UL;
+        }
+
+        // from bid_internal.h
+        // No overflow checking
+        private static ulong fast_get_BID64_check_OF(ulong sgn, int expon, ulong coeff)
+        {
+            ulong r, mask;
+
+            if (((uint)expon) >= 3 * 256 - 1)
+            {
+                if ((expon == 3 * 256 - 1) && coeff == 10000000000000000UL)
+                {
+                    expon = 3 * 256;
+                    coeff = 1000000000000000UL;
+                }
+
+                if (((uint)expon) >= 3 * 256)
+                {
+                    while (coeff < 1000000000000000UL && expon >= 3 * 256)
+                    {
+                        expon--;
+                        coeff = (coeff << 3) + (coeff << 1);
+                    }
+                    if (expon > MaxBiasedExponent)
+                    {
+                        // PORT: remove flag setting
+                        // PORT: remove handling of other rounding modes
+
+                        // overflow
+                        return sgn | PositiveInfinityBits;
+                    }
+                }
+            }
+
+            mask = 1;
+            mask <<= ExponentShiftSmall;
+
+            // check whether coefficient fits in 10*5+3 bits
+            if (coeff < mask)
+            {
+                r = (ulong)expon;
+                r <<= ExponentShiftSmall;
+                r |= (coeff | sgn);
+                return r;
+            }
+            // special format
+
+            // eliminate the case coeff==10^16 after rounding
+            if (coeff == 10000000000000000UL)
+            {
+                r = (ulong)expon + 1;
+                r <<= ExponentShiftSmall;
+                r |= (1000000000000000UL | sgn);
+                return r;
+            }
+
+            r = (ulong)expon;
+            r <<= ExponentShiftLarge;
+            r |= (sgn | SpecialEncodingMask);
+            // add coeff, without leading bits
+            mask = (mask >> 2) - 1;
+            coeff &= mask;
+            r |= coeff;
+
+            return r;
+        }
+
+        // from bid_internal.h
+        // No overflow/underflow checking
+        // or checking for coefficients equal to 10^16
+        private static ulong very_fast_get_BID64(ulong sgn, int expon, ulong coeff)
+        {
+            ulong r, mask;
+
+            mask = 1;
+            mask <<= ExponentShiftSmall;
+
+            // check whether coefficient fits in 10*5+3 bits
+            if (coeff < mask)
+            {
+                r = (ulong)expon;
+                r <<= ExponentShiftSmall;
+                r |= (coeff | sgn);
+                return r;
+            }
+            // special format
+            r = (ulong)expon;
+            r <<= ExponentShiftLarge;
+            r |= (sgn | SpecialEncodingMask);
+            // add coeff, without leading bits
+            mask = (mask >> 2) - 1;
+            coeff &= mask;
+            r |= coeff;
+
+            return r;
+        }
+
+        // from bid_internal.h
+        private static bool unpack_BID64(out ulong psign_x, out int pexponent_x, out ulong pcoefficient_x, ulong x) // TODO this whole function could probably be simplified/merged with ExtractBiasedExponantFromBits and ExtractSignificandFromBits
+        {
+            ulong coeff;
+
+            psign_x = x & 0x8000000000000000UL;
+
+            if ((x & SpecialEncodingMask) == SpecialEncodingMask)
+            {
+                // special encodings
+                // coefficient
+                coeff = (x & LargeSignificandMask) | LargeSignificandHighBit;
+
+                if ((x & InfinityMask) == InfinityMask)
+                {
+                    pexponent_x = 0;
+                    pcoefficient_x = x & 0xfe03ffffffffffffUL;
+                    if ((x & 0x0003ffffffffffffUL) >= 1000000000000000UL)
+                    {
+                        pcoefficient_x = x & 0xfe00000000000000UL;
+                    }
+                    if ((x & NaNMask) == InfinityMask)
+                    {
+                        pcoefficient_x = x & (InfinityMask | SignMask);
+                    }
+                    return false;   // NaN or Infinity
+                }
+                // check for non-canonical values
+                if (coeff >= 10000000000000000UL)
+                {
+                    coeff = 0; // TODO should we handle non-canonical in the Significand property?
+                }
+                pcoefficient_x = coeff;
+                // get exponent
+                pexponent_x = ExtractBiasedExponentFromBits(x); // TODO this is kinda inefficient as we recheck encoding type
+                return coeff != 0;
+            }
+            // exponent
+            pexponent_x = ExtractBiasedExponentFromBits(x); // TODO this is kinda inefficient as we recheck encoding type
+            // coefficient
+            pcoefficient_x = x & SmallSignificandMask;
+
+            return pcoefficient_x != 0;
+        }
+
     }
 }
